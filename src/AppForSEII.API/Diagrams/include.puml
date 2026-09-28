@@ -1,0 +1,6 @@
+@startuml
+!include .\\ApplicationUser.puml
+!include .\\Game.puml
+!include .\\Referee.puml
+!include .\\RefereeGroup.puml
+@enduml

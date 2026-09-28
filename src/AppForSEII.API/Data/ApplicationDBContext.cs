@@ -21,5 +21,6 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
     public DbSet<RefereeGroup> RefereeGroups { get; set; }
 
+    public DbSet<Referee> Referees { get; set; }
 
 }
