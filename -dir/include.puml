@@ -1,4 +1,0 @@
-@startuml
-!include .\\src\AppForSEII.API\Models\ApplicationUser.puml
-!include .\\src\AppForSEII.API\Models\RefereeGroup.puml
-@enduml
