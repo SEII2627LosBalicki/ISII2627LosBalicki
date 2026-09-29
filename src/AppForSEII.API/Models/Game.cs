@@ -4,7 +4,7 @@ namespace AppForSEII.API.Models;
 
 public class Game
 {
-    public Game(int id, string name, DateTime date, string place, string? description, Sport? sport)
+    public Game(int id, string name, DateTime date, string place, string? description, int sportId, string responsibleId)
     {
         Id = id;
         Name = name;
@@ -12,6 +12,8 @@ public class Game
         Place = place;
         Description = description;
         
+        SportId = sportId;
+        ResponsibleId = responsibleId;
     }
 
     public int Id { get; set; } // Primary key
@@ -22,6 +24,10 @@ public class Game
     [StringLength(100, MinimumLength = 6, ErrorMessage = "Place must have more than 5 characters.")]    
     public string Place { get; set; }= "More than 5 characters"; // Place must have more than 5 characters
     public string? Description { get; set;}
+    
+    public int SportId { get; set; } // Foreign key to Sport
     public Sport Sport { get; set; } // Navigation property to Sport
+    public string ResponsibleId { get; set; } // Foreign key to ApplicationUser
+    public ApplicationUser Responsible { get; set; } // Navigation property to ApplicationUser
 
 }

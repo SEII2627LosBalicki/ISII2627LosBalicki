@@ -22,4 +22,6 @@ public class ApplicationUser : IdentityUser
 
     [StringLength(50)]
     public string? Surname {get;set;}
+
+    public List<Game> Games { get; set; } = new List<Game>(); // Navigation property to Game
 }
