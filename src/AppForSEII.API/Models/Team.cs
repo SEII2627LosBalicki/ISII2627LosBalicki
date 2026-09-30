@@ -1,0 +1,25 @@
+using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
+
+namespace AppForSEII.API.Models;
+
+[Index(nameof(Name), IsUnique =true)]
+public class Team {
+    public Team() {}
+
+    public Team(int id, string name, int maxMembers, int minAge, int maxAge, string? description = "Team name") {
+        Id = id;
+        Name = name;
+        MaxMembers = maxMembers;
+        MinAge = minAge;
+        MaxAge = maxAge;
+    }
+
+    public int Id { get; set; }
+
+    [StringLength(9, MinimumLength = 4)]
+    public string Name { get; set; } = "Team name";
+    public int MaxMembers { get; set; }
+    public int MinAge { get; set; } = 3;
+    public int MaxAge { get; set; } = 3;
+}
