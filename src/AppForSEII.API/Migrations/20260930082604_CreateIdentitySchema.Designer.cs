@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppForSEII.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260929094551_CreateIdentitySchema")]
+    [Migration("20260930082604_CreateIdentitySchema")]
     partial class CreateIdentitySchema
     {
         /// <inheritdoc />
@@ -130,10 +130,21 @@ namespace AppForSEII.API.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("ResponsibleId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("SportId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Name")
                         .IsUnique();
+
+                    b.HasIndex("ResponsibleId");
+
+                    b.HasIndex("SportId");
 
                     b.ToTable("Games");
                 });
@@ -345,6 +356,25 @@ namespace AppForSEII.API.Migrations
                     b.HasDiscriminator().HasValue("Referee");
                 });
 
+            modelBuilder.Entity("AppForSEII.API.Models.Game", b =>
+                {
+                    b.HasOne("AppForSEII.API.Models.ApplicationUser", "Responsible")
+                        .WithMany("Games")
+                        .HasForeignKey("ResponsibleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AppForSEII.API.Models.Sport", "Sport")
+                        .WithMany("Games")
+                        .HasForeignKey("SportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Responsible");
+
+                    b.Navigation("Sport");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -394,6 +424,16 @@ namespace AppForSEII.API.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("AppForSEII.API.Models.ApplicationUser", b =>
+                {
+                    b.Navigation("Games");
+                });
+
+            modelBuilder.Entity("AppForSEII.API.Models.Sport", b =>
+                {
+                    b.Navigation("Games");
                 });
 #pragma warning restore 612, 618
         }
