@@ -22,5 +22,11 @@ public class ApplicationUser : IdentityUser
 
     [StringLength(50)]
     public string? Surname {get;set;}
+
+    [InverseProperty("Captain")]
+    public IList<Team> CaptainOf { get; set; } = new List<Team>();
+    
+    [InverseProperty("User")]
+    public IList<TeamInvitation> TeamInvitations { get; set; } = new List<TeamInvitation>();
     
 }

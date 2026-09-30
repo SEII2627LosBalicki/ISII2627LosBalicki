@@ -9,4 +9,5 @@ public class Sport
     public int NumberofReferees { get; set; } = 1;
     public string Description { get; set; } = "Description";
     public string BasicRules { get; set; } = "Rules for the game";
+    public IList<Team> Teams { get; set; } = new List<Team>();
 }   
