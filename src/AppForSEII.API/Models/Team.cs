@@ -1,18 +1,31 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
 namespace AppForSEII.API.Models;
 
 [Index(nameof(Name), IsUnique =true)]
 public class Team {
-    public Team() {}
 
-    public Team(int id, string name, int maxMembers, int minAge, int maxAge, string? description = "Team name") {
+    // constructor w/o parameters
+    public Team()
+    {
+        TeamInvitations = new List<TeamInvitation>();
+    }
+
+    // consturctor w/ parameters
+    public Team(int id, string name, int maxMembers, int minAge, int maxAge, Sport sport, ApplicationUser captain) {
         Id = id;
         Name = name;
         MaxMembers = maxMembers;
         MinAge = minAge;
         MaxAge = maxAge;
+
+        Sport = sport;
+        SportId = sport?.Id ?? 0;
+        Captain = captain;
+        CaptainId = captain?.Id ?? string.Empty;
+        TeamInvitations = new List<TeamInvitation>();
     }
 
     public int Id { get; set; }
@@ -22,4 +35,18 @@ public class Team {
     public int MaxMembers { get; set; }
     public int MinAge { get; set; } = 3;
     public int MaxAge { get; set; } = 3;
+
+    // 1..N Sport
+    [ForeignKey(nameof(SportId))]
+    public int SportId { get; set; }
+    public Sport Sport { get; set; } = null!; //not null
+
+    // 1..N ApplicationUser(Captain)
+    public string CaptainId { get; set; } = string.Empty;
+    [ForeignKey(nameof(CaptainId))]
+    public ApplicationUser Captain { get; set; } = null!;
+
+    // N..N through TeamInvitation
+
+    public IList<TeamInvitation> TeamInvitations { get; set; }
 }
