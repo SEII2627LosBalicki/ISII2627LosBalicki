@@ -28,6 +28,7 @@ public class TeamInvitation
     public int TeamId { get; set; }
 
     [ForeignKey(nameof(TeamId))]
+    [DeleteBehavior(DeleteBehavior.NoAction)]
     public Team Team { get; set; } = null!;
 
     public bool InvitationAccepted { get; set; } = false;
