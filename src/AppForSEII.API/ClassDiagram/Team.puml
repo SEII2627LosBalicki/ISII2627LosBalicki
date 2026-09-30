@@ -12,7 +12,7 @@ class Team {
     + Captain : ApplicationUser <<get>> <<set>>
     + TeamInvitations : IList<TeamInvitation> <<get>> <<set>>
     + Team()
-    + Team(id:int, name :string, maxMembers:int, minAge:int, maxAge:int, maxAge:int, description:stirng?)
+    + Team(id:int, name :string, maxMembers:int, minAge:int, maxAge:int, maxAge:int, sport:Sport, captain:ApplicationUser)
 
 }
 @enduml
