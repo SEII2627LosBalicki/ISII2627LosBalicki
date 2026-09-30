@@ -4,16 +4,16 @@ namespace AppForSEII.API.Models;
 
 public class Game
 {
-    public Game(int id, string name, DateTime date, string place, string? description, int sportId, string responsibleId)
+    public Game(int id, string name, DateTime date, string place, string? description, int sportId, string responsibleforId)
     {
         Id = id;
         Name = name;
         Date = date;
         Place = place;
         Description = description;
-        
+
         SportId = sportId;
-        ResponsibleId = responsibleId;
+        ResponsibleForId = responsibleforId;
     }
 
     public int Id { get; set; } // Primary key
@@ -26,8 +26,11 @@ public class Game
     public string? Description { get; set;}
     
     public int SportId { get; set; } // Foreign key to Sport
-    public Sport Sport { get; set; } // Navigation property to Sport
-    public string ResponsibleId { get; set; } // Foreign key to ApplicationUser
-    public ApplicationUser Responsible { get; set; } // Navigation property to ApplicationUser
+    public Sport Sport { get; set; } = null!; // Navigation property to Sport
+
+    public string ResponsibleForId { get; set; } // Foreign key to ApplicationUser
+    public ApplicationUser ResponsibleFor { get; set; } = null!; // Navigation property to ApplicationUser
+
+    public List<GameInvitation> GameInvitations { get; set; } = new List<GameInvitation>();// Navigation property to GameInvitation
 
 }

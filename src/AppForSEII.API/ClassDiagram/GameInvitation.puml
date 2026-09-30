@@ -1,0 +1,8 @@
+@startuml
+class GameInvitation {
+    + TeamId : int <<get>> <<set>>
+    + GameId : int <<get>> <<set>>
+    + AcceptedGame: bool <<get>> <<set>> = false
+    + Message: string <<get>> <<set>> = "More than 10 chars"
+}
+@enduml

@@ -3,22 +3,23 @@ namespace AppForSEII.API.Models;
 [Index(nameof(Name), IsUnique = true)]
 public class Sport
 {
-    public Sport(int id, string name, int minimumNumberofPlayers, int numberofReferees, string description, string basicRules)
+    public Sport(int id, string name, string description, string basicRules)
     {
         Id = id;
         Name = name;
-        MinimumNumberofPlayers = minimumNumberofPlayers;
-        NumberofReferees = numberofReferees;
+        MinimumNumberofPlayers = 2;
+        NumberofReferees = 1;
         Description = description;
         BasicRules = basicRules;
     }
 
     public int Id { get; set; }
-    public string Name { get; set; } = string.Empty;
-    public int MinimumNumberofPlayers { get; set; } = 2;
-    public int NumberofReferees { get; set; } = 1;
-    public string Description { get; set; } = "Description";
-    public string BasicRules { get; set; } = "Rules for the game";
+    public string Name { get; set; }
+    public int MinimumNumberofPlayers { get; set; }
+    public int NumberofReferees { get; set; }
+    public string Description { get; set; }
+    public string BasicRules { get; set; }
 
-    public List<Game> Games { get; set; } = new List<Game>(); // Navigation property to Game
+    public List<Game> Games { get; set; } = new List<Game>();// Navigation property to Game
+    //public List<Team> Teams { get; set; } // Navigation property to Team
 }   
