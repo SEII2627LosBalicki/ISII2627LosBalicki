@@ -1,7 +1,7 @@
 namespace AppForSEII.API.Data {
     public class SeedData {
         public static void Initialize(ApplicationDbContext dbContext, IServiceProvider serviceProvider, ILogger logger) {
-            List<string> rolesNames = new List<string> { "Administrator", "Employee", "Customer" };
+            List<string> rolesNames = new List<string> { "Administrator", "Referee", "User" };
 
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             try {
@@ -19,14 +19,18 @@ namespace AppForSEII.API.Data {
                 logger.LogError(ex, "An error occurred seeding the Users in the Database.");
             }
 
- 
-
+            try 
+            {
+                SeedSportsGamesAndReferees(dbContext);
+            }
+            catch (Exception ex) {
+                logger.LogError(ex, "An error occurred seeding the Sports, Games and Referees in the Database.");
+            }
         }
 
         public static void SeedRoles(RoleManager<IdentityRole> roleManager, List<string> roles) {
 
             foreach (string roleName in roles) {
-                //it checks such role does not exist in the database 
                 if (!roleManager.RoleExistsAsync(roleName).Result) {
                     IdentityRole role = new IdentityRole();
                     role.Name = roleName;
@@ -34,11 +38,9 @@ namespace AppForSEII.API.Data {
                     IdentityResult roleResult = roleManager.CreateAsync(role).Result;
                 }
             }
-
         }
 
         public static void SeedUsers(UserManager<ApplicationUser> userManager, List<string> roles) {
-            //first, it checks the user does not already exist in the DB
             if (userManager.FindByNameAsync("elena@uclm.es").Result == null) {
                 ApplicationUser user = new ApplicationUser("1", "Elena", "Navarro Martínez", "elena@uclm.es");
                 user.EmailConfirmed = true;
@@ -47,33 +49,68 @@ namespace AppForSEII.API.Data {
                 result.Wait();
 
                 if (result.IsCompletedSuccessfully) {
-                    //administrator role
                     userManager.AddToRoleAsync(user, roles[0]).Wait();
                 }
             }
 
+            if (userManager.FindByNameAsync("referee1@uclm.es").Result == null) {
+                Referee referee = new Referee("2", "Carlos", "Mateo Gómez", "referee1@uclm.es", yearsRefereeing: 5, rating: 4);
+                referee.EmailConfirmed = true;
 
-            if (userManager.FindByNameAsync("peter@uclm.es").Result == null) {
-                //A customer class has been defined because it has different attributes (purchase, rental, etc.)
-                ApplicationUser user = new ApplicationUser("3", "Peter", "Jackson", "peter@uclm.es");
-                user.EmailConfirmed = true;
-
-                var result = userManager.CreateAsync(user, "OtherPass12$");
-
+                var result = userManager.CreateAsync(referee, "RefereePass123$");
                 result.Wait();
 
                 if (result.IsCompletedSuccessfully) {
-                    //customer role
-                    userManager.AddToRoleAsync(user, roles[2]).Wait();
-
+                    userManager.AddToRoleAsync(referee, roles[1]).Wait();
                 }
             }
 
+            if (userManager.FindByNameAsync("referee2@uclm.es").Result == null) {
+                Referee referee = new Referee("3", "Ana", "López Pérez", "referee2@uclm.es", yearsRefereeing: 3, rating: 5);
+                referee.EmailConfirmed = true;
+
+                var result = userManager.CreateAsync(referee, "RefereePass123$");
+                result.Wait();
+
+                if (result.IsCompletedSuccessfully) {
+                    userManager.AddToRoleAsync(referee, roles[1]).Wait();
+                }
+            }
         }
 
+        public static void SeedSportsGamesAndReferees(ApplicationDbContext dbContext) {
+            var sport = dbContext.Sports.FirstOrDefault();
+            if (sport == null) {
+                sport = new Sport();
+                dbContext.Sports.Add(sport);
+                dbContext.SaveChanges();
+            }
 
+            var game = dbContext.Games.FirstOrDefault();
+            if (game == null) {
+                game = new Game();
+                dbContext.Games.Add(game);
+                dbContext.SaveChanges();
+            }
 
+            if (!dbContext.RefereeGroups.Any()) {
+                var refereeGroup = new RefereeGroup("Referee Group 1", game.Id, "Group of referees for Soccer Match 1", "Follow the official RFEF rules.");
+                dbContext.RefereeGroups.Add(refereeGroup);
+                dbContext.SaveChanges();
 
+                var ref1 = dbContext.Referees.FirstOrDefault(r => r.UserName == "referee1@uclm.es");
+                var ref2 = dbContext.Referees.FirstOrDefault(r => r.UserName == "referee2@uclm.es");
 
+                if (ref1 != null) {
+                    var assignment1 = new RefereeAssignedTo(refereeGroup.Id, ref1.Id, "Main referee for Soccer Match 1", "Responsible for enforcing the rules and making final decisions during the match.");
+                    dbContext.RefereeAssignedTos.Add(assignment1);
+                }
+                if (ref2 != null) {
+                    var assignment2 = new RefereeAssignedTo(refereeGroup.Id, ref2.Id, "Assistant referee for Soccer Match 1", "Responsible for assisting the main referee in enforcing the rules and making decisions during the match.");
+                    dbContext.RefereeAssignedTos.Add(assignment2);
+                }
+                dbContext.SaveChanges();
+            }
+        }
     }
 }

@@ -22,5 +22,8 @@ public class ApplicationUser : IdentityUser
 
     [StringLength(50)]
     public string? Surname {get;set;}
+
+    // Navigation property: Games where this user acts as captain/responsible (1:N)
+    public ICollection<Game> ResponsibleOf { get; set; } = new List<Game>();
     
 }
