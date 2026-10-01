@@ -86,7 +86,13 @@ namespace AppForSEII.API.Data {
         public static void SeedSportsGamesAndReferees(ApplicationDbContext dbContext) {
             var sport = dbContext.Sports.FirstOrDefault(s => s.Name == "Soccer");
             if (sport == null) {
-                sport = new Sport("Soccer", minimumNumberofPlayers: 11, numberofReferees: 3, description: "A team sport played between two teams of eleven players with a spherical ball.", basicRules: "Oficial RFEF Rules");
+                sport = new Sport("Soccer"); {
+                    sport.MinimumNumberofPlayers = 11;
+                    sport.NumberofReferees = 3;
+                    sport.Description = "Soccer is a team sport played between two teams of eleven players with a spherical ball.";
+                    sport.BasicRules = "The objective of the game is to score by getting the ball into the opposing goal.";
+                }
+
                 dbContext.Sports.Add(sport);
                 dbContext.SaveChanges();
             }
@@ -98,8 +104,8 @@ namespace AppForSEII.API.Data {
             {
                 game = new Game("Soccer Match 1", DateTime.Now.AddDays(7), "José Copete", "First soccer match of the season");
                 {
-                    Sport = sport;
-                    ResponsibleFor = user;
+                    game.Sport = sport;
+                    game.ResponsibleFor = user;
                 };
                 dbContext.Games.Add(game);
                 dbContext.SaveChanges();
@@ -107,7 +113,7 @@ namespace AppForSEII.API.Data {
 
             if (!dbContext.RefereeGroups.Any(rg => rg.Name == "Soccer Match 1 Referee Group"))
             {
-                var refereeGroup = new RefereeGroup("Soccer Match 1 Referee Group", game.Id, "Group of referees for Soccer Match 1", "Follow the official RFEF rules.");
+                var refereeGroup = new RefereeGroup("Referee Group 1", game.Id, "Group of referees for Soccer Match 1", "Follow the official RFEF rules.");
                 dbContext.RefereeGroups.Add(refereeGroup);
                 dbContext.SaveChanges();
 
@@ -116,12 +122,12 @@ namespace AppForSEII.API.Data {
 
                 if (ref1 != null)
                 {
-                    var assignment1 = new RefereeAssignedTo(refereeGroup.Id, ref1.Id, "Main referee for Soccer Match 1");
+                    var assignment1 = new RefereeAssignedTo(refereeGroup.Id, ref1.Id, "Main referee for Soccer Match 1", "Responsible for enforcing the rules and making final decisions during the match.");
                     dbContext.RefereeAssignedTos.Add(assignment1);
                 }
                 if (ref2 != null)
                 {
-                    var assignment2 = new RefereeAssignedTo(refereeGroup.Id, ref2.Id, "Assistant referee for Soccer Match 1");
+                    var assignment2 = new RefereeAssignedTo(refereeGroup.Id, ref2.Id, "Assistant referee for Soccer Match 1", "Responsible for assisting the main referee in enforcing the rules and making decisions during the match.");
                     dbContext.RefereeAssignedTos.Add(assignment2);
                 }
             }

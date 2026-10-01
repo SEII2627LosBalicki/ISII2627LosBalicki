@@ -8,12 +8,8 @@ public class Sport
 
     }
 
-    public Sport(string name, int minimumNumberofPlayers = 2, int numberofReferees = 1, string description, string basicRules) {
-        Name = name;
-        MinimumNumberofPlayers = minimumNumberofPlayers;
-        NumberofReferees = numberofReferees;
-        Description = description;
-        BasicRules = basicRules;
+    public Sport(string name) {
+        Name = name; 
     }
 
 
