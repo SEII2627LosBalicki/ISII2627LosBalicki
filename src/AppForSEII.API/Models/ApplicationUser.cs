@@ -23,7 +23,7 @@ public class ApplicationUser : IdentityUser
     [StringLength(50)]
     public string? Surname {get;set;}
 
-    public List<Game> ResponsibleFor { get; set; } = new List<Game>(); // Navigation property to Game
-    //public List<Team> CaptainOf { get; set; } = new List<Team>();// Navigation property to Team
+    public IList<Game> ResponsibleFor { get; set; } = new List<Game>(); // Navigation property to Game
+    
     
 }

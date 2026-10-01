@@ -31,6 +31,6 @@ public class Game
     public string ResponsibleForId { get; set; } // Foreign key to ApplicationUser
     public ApplicationUser ResponsibleFor { get; set; } = null!; // Navigation property to ApplicationUser
 
-    public List<GameInvitation> GameInvitations { get; set; } = new List<GameInvitation>();// Navigation property to GameInvitation
+    public IList<GameInvitation> GameInvitations { get; set; } = new List<GameInvitation>();// Navigation property to GameInvitation
 
 }

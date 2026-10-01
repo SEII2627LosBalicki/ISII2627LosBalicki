@@ -20,6 +20,6 @@ public class Sport
     public string Description { get; set; }
     public string BasicRules { get; set; }
 
-    public List<Game> Games { get; set; } = new List<Game>();// Navigation property to Game
-    //public List<Team> Teams { get; set; } // Navigation property to Team
+    public IList<Game> Games { get; set; } = new List<Game>();// Navigation property to Game
+    
 }   
