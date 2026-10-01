@@ -5,14 +5,5 @@ class Team {
     + MaxMembers : int <<get>> <<set>>
     + MinAge : int <<get>> <<set>> = 3
     + MaxAge : int <<get>> <<set>> = 3
-    
-    + SportId : int <<get>> <<set>>
-    + Sport : Sport <<get>> <<set>>
-    + CaptainId : string <<get>> <<set>>
-    + Captain : ApplicationUser <<get>> <<set>>
-    + TeamInvitations : IList<TeamInvitation> <<get>> <<set>>
-    + Team()
-    + Team(id:int, name :string, maxMembers:int, minAge:int, maxAge:int, maxAge:int, sport:Sport, captain:ApplicationUser)
-
 }
 @enduml

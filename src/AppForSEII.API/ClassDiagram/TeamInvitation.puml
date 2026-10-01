@@ -6,7 +6,5 @@ class TeamInvitation {
     + Team : Team <<get>> <<set>>
     + InvitationAccepted : bool <<get>> <<set>> = false
     + InvitationMessage : string <<get>> <<set>> = "Invitation message for a team member"
-    + TeamInvitation()
-    + TeamInvitation(userId:string, teamId:int, invitationMessage:string, invitationAccepted:bool)
 }
 @enduml
