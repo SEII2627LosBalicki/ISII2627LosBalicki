@@ -25,8 +25,8 @@ public class RefereeGroup
     
     [Required]
     public int GameId { get; set; }
-
-    public Game? Game { get; set; }
+    [ForeignKey(nameof(GameId))]
+    public Game Game { get; set; } = null!; // Navigation property to Game
 
     public ICollection<RefereeAssignedTo> RefereeAssignedTos { get; set; } = new List<RefereeAssignedTo>();
 }

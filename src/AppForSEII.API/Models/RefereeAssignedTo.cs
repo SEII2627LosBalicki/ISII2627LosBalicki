@@ -1,3 +1,6 @@
+namespace AppForSEII.API.Models;
+using Microsoft.EntityFrameworkCore;
+
 public class RefereeAssignedTo
 {
 
@@ -31,6 +34,7 @@ public class RefereeAssignedTo
     [StringLength(255, MinimumLength = 3, ErrorMessage = "Between 3 and 255 characters.")]
     public string RoleDescription { get; set; } = "Between 3 and 255 chars.";
 
+    [DeleteBehavior(DeleteBehavior.NoAction)]
     public RefereeGroup? RefereeGroup { get; set; }
     public Referee? Referee { get; set; }
 }
