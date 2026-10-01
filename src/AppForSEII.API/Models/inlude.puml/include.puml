@@ -1,9 +1,0 @@
-@startuml
-!include .\\ApplicationUser.puml
-!include .\\Game.puml
-!include .\\Gender.puml
-!include .\\Referee.puml
-!include .\\RefereeAssignedTo.puml
-!include .\\RefereeGroup.puml
-!include .\\Sport.puml
-@enduml

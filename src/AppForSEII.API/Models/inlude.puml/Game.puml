@@ -1,6 +1,0 @@
-@startuml
-class Game {
-    + Id : int <<get>> <<set>>
-    + RefereeGroup : RefereeGroup? <<get>> <<set>>
-}
-@enduml
