@@ -72,6 +72,23 @@ namespace AppForSEII.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "RefereeAssignedTos",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RefereeGroupId = table.Column<int>(type: "int", nullable: false),
+                    RefereeId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AcceptedAssignment = table.Column<bool>(type: "bit", nullable: false),
+                    Role = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    RoleDescription = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RefereeAssignedTos", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "RefereeGroups",
                 columns: table => new
                 {
@@ -282,6 +299,9 @@ namespace AppForSEII.API.Migrations
 
             migrationBuilder.DropTable(
                 name: "Games");
+
+            migrationBuilder.DropTable(
+                name: "RefereeAssignedTos");
 
             migrationBuilder.DropTable(
                 name: "RefereeGroups");
