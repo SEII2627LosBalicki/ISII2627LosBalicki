@@ -33,4 +33,9 @@ public class Game
 
     public IList<GameInvitation> GameInvitations { get; set; } = new List<GameInvitation>();// Navigation property to GameInvitation
 
-}
+    public int RefereeGroupId { get; set; }
+
+        public RefereeGroup? RefereeGroup { get; set; }
+
+}        
+

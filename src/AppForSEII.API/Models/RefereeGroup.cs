@@ -1,5 +1,18 @@
 public class RefereeGroup
 {
+
+    public RefereeGroup() {
+
+    }
+
+    public RefereeGroup(string name, int gameId, string? description = null, string? rules = null) {
+        Name = name;
+        Description = description;
+        Rules = rules;
+        GameId = gameId;
+    }
+
+
     [Key]
     public int Id { get; set; }
 
@@ -12,4 +25,8 @@ public class RefereeGroup
     
     [Required]
     public int GameId { get; set; }
+
+    public Game? Game { get; set; }
+
+    public ICollection<RefereeAssignedTo> RefereeAssignedTos { get; set; } = new List<RefereeAssignedTo>();
 }

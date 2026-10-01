@@ -1,0 +1,6 @@
+@startuml
+class Sport {
+    + Id : int <<get>> <<set>>
+    + Games : ICollection<Game> <<get>> <<set>>
+}
+@enduml
