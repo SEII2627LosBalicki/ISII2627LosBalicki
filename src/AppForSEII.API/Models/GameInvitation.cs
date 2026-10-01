@@ -1,5 +1,7 @@
 namespace AppForSEII.API.Models;
 
+[PrimaryKey(nameof(TeamId), nameof(GameId))]
+
 public class GameInvitation
 {
     public GameInvitation(int teamId, int gameId, string message)

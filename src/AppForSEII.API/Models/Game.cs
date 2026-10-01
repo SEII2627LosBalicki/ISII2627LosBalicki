@@ -4,6 +4,11 @@ namespace AppForSEII.API.Models;
 
 public class Game
 {
+    public Game() 
+    { 
+        GameInvitations = new List<GameInvitation>();
+    }
+
     public Game(int id, string name, DateTime date, string place, string? description, int sportId, string responsibleforId)
     {
         Id = id;
@@ -28,14 +33,14 @@ public class Game
     public int SportId { get; set; } // Foreign key to Sport
     public Sport Sport { get; set; } = null!; // Navigation property to Sport
 
-    public string ResponsibleForId { get; set; } // Foreign key to ApplicationUser
+    public string ResponsibleForId { get; set; } = string.Empty; // Foreign key to ApplicationUser
     public ApplicationUser ResponsibleFor { get; set; } = null!; // Navigation property to ApplicationUser
 
     public IList<GameInvitation> GameInvitations { get; set; } = new List<GameInvitation>();// Navigation property to GameInvitation
 
     public int RefereeGroupId { get; set; }
 
-        public RefereeGroup? RefereeGroup { get; set; }
+    public RefereeGroup? RefereeGroup { get; set; }
 
 }        
 
