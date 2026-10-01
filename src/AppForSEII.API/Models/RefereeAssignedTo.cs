@@ -1,5 +1,18 @@
 public class RefereeAssignedTo
 {
+
+    public RefereeAssignedTo() {
+
+    }
+
+    public RefereeAssignedTo(int refereeGroupId, string refereeId, string role, string roleDescription, bool acceptedAssignment = false) {
+        RefereeGroupId = refereeGroupId;
+        RefereeId = refereeId;
+        Role = role;
+        RoleDescription = roleDescription;
+        AcceptedAssignment = acceptedAssignment;
+    }
+
     [Key]
     public int Id { get; set; }
     
@@ -17,4 +30,7 @@ public class RefereeAssignedTo
 
     [StringLength(255, MinimumLength = 3, ErrorMessage = "Between 3 and 255 characters.")]
     public string RoleDescription { get; set; } = "Between 3 and 255 chars.";
+
+    public RefereeGroup? RefereeGroup { get; set; }
+    public Referee? Referee { get; set; }
 }
