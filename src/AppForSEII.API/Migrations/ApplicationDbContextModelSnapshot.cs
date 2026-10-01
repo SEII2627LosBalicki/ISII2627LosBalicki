@@ -112,22 +112,7 @@ namespace AppForSEII.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Place")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("ResponsibleForId")
+                    b.Property<string>("ApplicationUserId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int?>("SportId")
@@ -135,10 +120,7 @@ namespace AppForSEII.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.HasIndex("ResponsibleForId");
+                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("SportId");
 
@@ -153,28 +135,7 @@ namespace AppForSEII.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("BasicRules")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("MinimumNumberofPlayers")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("NumberofReferees")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
 
                     b.ToTable("Sports");
                 });
@@ -373,7 +334,8 @@ namespace AppForSEII.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GameId");
+                    b.HasIndex("GameId")
+                        .IsUnique();
 
                     b.ToTable("RefereeGroups");
                 });
@@ -398,17 +360,13 @@ namespace AppForSEII.API.Migrations
 
             modelBuilder.Entity("AppForSEII.API.Models.Game", b =>
                 {
-                    b.HasOne("AppForSEII.API.Models.ApplicationUser", "ResponsibleFor")
+                    b.HasOne("AppForSEII.API.Models.ApplicationUser", null)
                         .WithMany("ResponsibleOf")
-                        .HasForeignKey("ResponsibleForId");
+                        .HasForeignKey("ApplicationUserId");
 
-                    b.HasOne("AppForSEII.API.Models.Sport", "Sport")
+                    b.HasOne("AppForSEII.API.Models.Sport", null)
                         .WithMany("Games")
                         .HasForeignKey("SportId");
-
-                    b.Navigation("ResponsibleFor");
-
-                    b.Navigation("Sport");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -484,8 +442,8 @@ namespace AppForSEII.API.Migrations
             modelBuilder.Entity("RefereeGroup", b =>
                 {
                     b.HasOne("AppForSEII.API.Models.Game", "Game")
-                        .WithMany("RefereeGroups")
-                        .HasForeignKey("GameId")
+                        .WithOne("RefereeGroup")
+                        .HasForeignKey("RefereeGroup", "GameId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -495,7 +453,7 @@ namespace AppForSEII.API.Migrations
             modelBuilder.Entity("Referee", b =>
                 {
                     b.HasOne("AppForSEII.API.Models.Sport", "SportForReferee")
-                        .WithMany("Referees")
+                        .WithMany()
                         .HasForeignKey("SportId");
 
                     b.Navigation("SportForReferee");
@@ -508,14 +466,12 @@ namespace AppForSEII.API.Migrations
 
             modelBuilder.Entity("AppForSEII.API.Models.Game", b =>
                 {
-                    b.Navigation("RefereeGroups");
+                    b.Navigation("RefereeGroup");
                 });
 
             modelBuilder.Entity("AppForSEII.API.Models.Sport", b =>
                 {
                     b.Navigation("Games");
-
-                    b.Navigation("Referees");
                 });
 
             modelBuilder.Entity("RefereeGroup", b =>

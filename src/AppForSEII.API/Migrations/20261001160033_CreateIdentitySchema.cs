@@ -30,12 +30,7 @@ namespace AppForSEII.API.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    MinimumNumberofPlayers = table.Column<int>(type: "int", nullable: false),
-                    NumberofReferees = table.Column<int>(type: "int", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BasicRules = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1")
                 },
                 constraints: table =>
                 {
@@ -190,19 +185,15 @@ namespace AppForSEII.API.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Place = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ResponsibleForId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     SportId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Games", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Games_AspNetUsers_ResponsibleForId",
-                        column: x => x.ResponsibleForId,
+                        name: "FK_Games_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                     table.ForeignKey(
@@ -308,15 +299,9 @@ namespace AppForSEII.API.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Games_Name",
+                name: "IX_Games_ApplicationUserId",
                 table: "Games",
-                column: "Name",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Games_ResponsibleForId",
-                table: "Games",
-                column: "ResponsibleForId");
+                column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Games_SportId",
@@ -336,12 +321,7 @@ namespace AppForSEII.API.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_RefereeGroups_GameId",
                 table: "RefereeGroups",
-                column: "GameId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Sports_Name",
-                table: "Sports",
-                column: "Name",
+                column: "GameId",
                 unique: true);
         }
 

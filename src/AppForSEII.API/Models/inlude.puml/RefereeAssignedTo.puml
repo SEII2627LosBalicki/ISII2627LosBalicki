@@ -1,0 +1,14 @@
+@startuml
+class RefereeAssignedTo {
+    + RefereeAssignedTo()
+    + RefereeAssignedTo(refereeGroupId:int, refereeId:string, role:string, roleDescription:string, acceptedAssignment:bool)
+    + Id : int <<get>> <<set>>
+    + RefereeGroupId : int <<get>> <<set>>
+    + RefereeId : string <<get>> <<set>> = "0"
+    + AcceptedAssignment : bool <<get>> <<set>> = false
+    + Role : string <<get>> <<set>> = "Name of the role has to be between 3 and 20 chars."
+    + RoleDescription : string <<get>> <<set>> = "Between 3 and 255 chars."
+    + RefereeGroup : RefereeGroup? <<get>> <<set>>
+    + Referee : Referee? <<get>> <<set>>
+}
+@enduml
