@@ -127,12 +127,86 @@ namespace AppForSEII.API.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<int>("RefereeGroupId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ResponsibleForId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("SportId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Name")
                         .IsUnique();
 
+                    b.HasIndex("ResponsibleForId");
+
+                    b.HasIndex("SportId");
+
                     b.ToTable("Games");
+                });
+
+            modelBuilder.Entity("AppForSEII.API.Models.GameInvitation", b =>
+                {
+                    b.Property<int>("TeamId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("GameId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("AcceptedGame")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("TeamId", "GameId");
+
+                    b.HasIndex("GameId");
+
+                    b.ToTable("GameInvitations");
+                });
+
+            modelBuilder.Entity("AppForSEII.API.Models.RefereeAssignedTo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("AcceptedAssignment")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("RefereeGroupId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RefereeId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("RoleDescription")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RefereeGroupId");
+
+                    b.HasIndex("RefereeId");
+
+                    b.ToTable("RefereeAssignedTos");
                 });
 
             modelBuilder.Entity("AppForSEII.API.Models.Sport", b =>
@@ -390,6 +464,9 @@ namespace AppForSEII.API.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("GameId")
+                        .IsUnique();
+
                     b.ToTable("RefereeGroups");
                 });
 
@@ -400,10 +477,64 @@ namespace AppForSEII.API.Migrations
                     b.Property<int>("Rating")
                         .HasColumnType("int");
 
+                    b.Property<int?>("SportId")
+                        .HasColumnType("int");
+
                     b.Property<int>("YearsRefereeing")
                         .HasColumnType("int");
 
+                    b.HasIndex("SportId");
+
                     b.HasDiscriminator().HasValue("Referee");
+                });
+
+            modelBuilder.Entity("AppForSEII.API.Models.Game", b =>
+                {
+                    b.HasOne("AppForSEII.API.Models.ApplicationUser", "ResponsibleFor")
+                        .WithMany("ResponsibleOf")
+                        .HasForeignKey("ResponsibleForId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AppForSEII.API.Models.Sport", "Sport")
+                        .WithMany("Games")
+                        .HasForeignKey("SportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ResponsibleFor");
+
+                    b.Navigation("Sport");
+                });
+
+            modelBuilder.Entity("AppForSEII.API.Models.GameInvitation", b =>
+                {
+                    b.HasOne("AppForSEII.API.Models.Game", "GameInvited")
+                        .WithMany("GameInvitations")
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GameInvited");
+                });
+
+            modelBuilder.Entity("AppForSEII.API.Models.RefereeAssignedTo", b =>
+                {
+                    b.HasOne("RefereeGroup", "RefereeGroup")
+                        .WithMany("RefereeAssignedTos")
+                        .HasForeignKey("RefereeGroupId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Referee", "Referee")
+                        .WithMany("RefereeAssignedTos")
+                        .HasForeignKey("RefereeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Referee");
+
+                    b.Navigation("RefereeGroup");
                 });
 
             modelBuilder.Entity("AppForSEII.API.Models.Team", b =>
@@ -495,21 +626,62 @@ namespace AppForSEII.API.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("RefereeGroup", b =>
+                {
+                    b.HasOne("AppForSEII.API.Models.Game", "Game")
+                        .WithOne("RefereeGroup")
+                        .HasForeignKey("RefereeGroup", "GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Game");
+                });
+
+            modelBuilder.Entity("Referee", b =>
+                {
+                    b.HasOne("AppForSEII.API.Models.Sport", "SportForReferee")
+                        .WithMany()
+                        .HasForeignKey("SportId");
+
+                    b.Navigation("SportForReferee");
+                });
+
             modelBuilder.Entity("AppForSEII.API.Models.ApplicationUser", b =>
                 {
                     b.Navigation("CaptainOf");
 
+                    b.Navigation("ResponsibleOf");
+
                     b.Navigation("TeamInvitations");
+                });
+
+            modelBuilder.Entity("AppForSEII.API.Models.Game", b =>
+                {
+                    b.Navigation("GameInvitations");
+
+                    b.Navigation("RefereeGroup");
                 });
 
             modelBuilder.Entity("AppForSEII.API.Models.Sport", b =>
                 {
+                    b.Navigation("Games");
+
                     b.Navigation("Teams");
                 });
 
             modelBuilder.Entity("AppForSEII.API.Models.Team", b =>
                 {
                     b.Navigation("TeamInvitations");
+                });
+
+            modelBuilder.Entity("RefereeGroup", b =>
+                {
+                    b.Navigation("RefereeAssignedTos");
+                });
+
+            modelBuilder.Entity("Referee", b =>
+                {
+                    b.Navigation("RefereeAssignedTos");
                 });
 #pragma warning restore 612, 618
         }

@@ -27,4 +27,8 @@ public class ApplicationUser : IdentityUser
     
     public IList<TeamInvitation> TeamInvitations { get; set; } = new List<TeamInvitation>();
     
+
+    // Navigation property: Games where this user acts as captain/responsible (1:N)
+    public ICollection<Game> ResponsibleOf { get; set; } = new List<Game>();
+    
 }
