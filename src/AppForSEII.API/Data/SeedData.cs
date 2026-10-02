@@ -97,6 +97,18 @@ namespace AppForSEII.API.Data {
                 }
             }
 
+            if (userManager.FindByNameAsync("omarsgirlfriend@gmail.com").Result == null) {
+                ApplicationUser user = new ApplicationUser("5", "Melanni", "Enciso", "omarsgirlfriend@gmail.com");
+                user.EmailConfirmed = true;
+
+                var result = userManager.CreateAsync(user, "Password1234%");
+                result.Wait();
+
+                if (result.IsCompletedSuccessfully) {
+                    userManager.AddToRoleAsync(user, roles[2]).Wait(); // User role
+                }
+            }
+
             if (userManager.FindByNameAsync("referee2@uclm.es").Result == null) {
                 Referee referee = new Referee("3", "Ana", "López Pérez", "referee2@uclm.es", yearsRefereeing: 3, rating: 5);
                 referee.EmailConfirmed = true;
@@ -110,7 +122,7 @@ namespace AppForSEII.API.Data {
             }
             
             if (userManager.FindByNameAsync("referee1@uclm.es").Result == null) {
-                Referee referee = new Referee("2", "Carlos", "Mateo Gómez", "referee1@uclm.es", yearsRefereeing: 5, rating: 4);
+                Referee referee = new Referee("4", "Carlos", "Mateo Gómez", "referee1@uclm.es", yearsRefereeing: 5, rating: 4);
                 referee.EmailConfirmed = true;
                 
                 var result = userManager.CreateAsync(referee, "RefereePass123$");
@@ -157,7 +169,7 @@ namespace AppForSEII.API.Data {
             }
 
             if (dbcontext.Sports.FirstOrDefault(s => s.Name == "Padel") == null) {
-                var sport = new Sport(1, "Padel", "Team sport playing with racquets.", "The ball can bounce off the walls.")
+                var sport = new Sport(0, "Padel", "Team sport playing with racquets.", "The ball can bounce off the walls.")
                 {
                     MinimumNumberofPlayers = 2,
                     NumberofReferees = 1
