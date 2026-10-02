@@ -97,6 +97,18 @@ namespace AppForSEII.API.Data {
                 }
             }
 
+            if (userManager.FindByNameAsync("omarsgirlfriend@gmail.com").Result == null) {
+                ApplicationUser user = new ApplicationUser("5", "Melanni", "Enciso", "omarsgirlfriend@gmail.com");
+                user.EmailConfirmed = true;
+
+                var result = userManager.CreateAsync(user, "Password1234%");
+                result.Wait();
+
+                if (result.IsCompletedSuccessfully) {
+                    userManager.AddToRoleAsync(user, roles[2]).Wait(); // User role
+                }
+            }
+
             if (userManager.FindByNameAsync("referee2@uclm.es").Result == null) {
                 Referee referee = new Referee("3", "Ana", "López Pérez", "referee2@uclm.es", yearsRefereeing: 3, rating: 5);
                 referee.EmailConfirmed = true;
