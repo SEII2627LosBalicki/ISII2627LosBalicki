@@ -20,8 +20,11 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Team> Teams { get; set; }
     public DbSet<Game> Games { get; set; }
     public DbSet<Sport> Sports { get; set; }
+    public DbSet<GameInvitation> GameInvitations { get; set; }
     public DbSet<RefereeGroup> RefereeGroups { get; set; }
+    public DbSet<TeamInvitation> TeamInvitations { get; set; }
 
     public DbSet<Referee> Referees { get; set; }
+    public DbSet<RefereeAssignedTo> RefereeAssignedTos { get; set; }
 
 }
