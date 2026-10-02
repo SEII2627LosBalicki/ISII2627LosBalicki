@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppForSEII.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20261002074336_CreateIdentitySchema")]
-    partial class CreateIdentitySchema
+    [Migration("20261002080627_CreateIdentitSchema")]
+    partial class CreateIdentitSchema
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
