@@ -1,0 +1,5 @@
+@startuml
+hide methods
+!include Team.puml
+!include TeamInvitation.puml
+@enduml
