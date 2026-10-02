@@ -17,17 +17,7 @@ namespace AppForSEII.API.Data {
             }
             catch (Exception ex) {
                 logger.LogError(ex, "An error occurred seeding the Users in the Database.");
-            }
-
-            /*
-            try {
-                // Inicializa deportes y partidos base
-                SeedSportsAndGames(dbContext);
-            }
-            catch (Exception ex) {
-                logger.LogError(ex, "An error occurred seeding the Sports and Games in the Database.");
-            }
-            */
+            }            
 
             try {
                 SeedSports(dbContext);
@@ -51,7 +41,7 @@ namespace AppForSEII.API.Data {
             }
 
             try {
-                var game = dbContext.Games.FirstOrDefault(g => g.Name == "Soccer Match");
+                var game = dbContext.Games.FirstOrDefault(g => g.Name == "Soccer Match 1");
                 SeedRefereeGroups(dbContext, game);
             }
             catch (Exception ex) {
@@ -64,7 +54,7 @@ namespace AppForSEII.API.Data {
                 if (!roleManager.RoleExistsAsync(roleName).Result) {
                     IdentityRole role = new IdentityRole();
                     role.Name = roleName;
-                    role.NormalizedName = roleName;
+                    role.NormalizedName = roleName.ToUpper();
                     IdentityResult roleResult = roleManager.CreateAsync(role).Result;
                 }
             }
@@ -132,37 +122,7 @@ namespace AppForSEII.API.Data {
             }
         }
 
-        /*
-        public static void SeedSportsAndGames(ApplicationDbContext dbContext) {
-            var sport = dbContext.Sports.FirstOrDefault(s => s.Name == "Soccer");
-            if (sport == null) {
-                sport = new Sport(0, "Soccer", "Soccer is a team sport played between two teams of eleven players with a spherical ball.", "The objective of the game is to score by getting the ball into the opposing goal.")
-                {
-                    MinimumNumberofPlayers = 11,
-                    NumberofReferees = 3
-                };
-                dbContext.Sports.Add(sport);
-                dbContext.SaveChanges();
-            }
-
-            var user = dbContext.Users.FirstOrDefault(u => u.UserName == "elena@uclm.es");
-            if (user != null && dbContext.Games.FirstOrDefault(g => g.Name == "Soccer Match 1") == null) {
-                var game = new Game
-                {
-                    Name = "Soccer Match 1",
-                    Date = DateTime.Now.AddDays(7),
-                    Place = "Estadio José Copete",
-                    Description = "First soccer match of the season",
-                    Sport = sport,
-                    SportId = sport.Id,
-                    ResponsibleFor = user,
-                    ResponsibleForId = user.Id
-                };
-                dbContext.Games.Add(game);
-                dbContext.SaveChanges();
-            }
-        }
-        */
+        
 
         public static void SeedRefereeGroups(ApplicationDbContext dbContext, Game? game) {
             if (game != null && !dbContext.RefereeGroups.Any(rg => rg.Name == "Referee Group 1")) {
@@ -218,7 +178,7 @@ namespace AppForSEII.API.Data {
 
                 if (sport != null && responsibleUser != null) 
                 {
-                    var game = new Game(0, "Soccer Match", DateTime.Now.AddDays(7), "Estadio Vallecas", "Partido amistoso inicial", sport.Id, responsibleUser.Id)
+                    var game = new Game(0, "Soccer Match 1", DateTime.Now.AddDays(7), "Estadio Vallecas", "Partido amistoso inicial", sport.Id, responsibleUser.Id)
                     {
                         SportId = sport.Id,
                         ResponsibleForId = responsibleUser.Id
@@ -275,63 +235,7 @@ namespace AppForSEII.API.Data {
         }
 
 
-        /*
-        public static void SeedTeams(ApplicationDbContext dbcontext, UserManager<ApplicationUser> userManager) 
-        {
-            // Comprobamos si el equipo ya existe
-            if (dbcontext.Teams.FirstOrDefault(t => t.Name == "Sporting Albacete") == null) {
-                
-                // Buscamos el deporte y el usuario que hemos creado en los métodos anteriores
-                var sport = dbcontext.Sports.FirstOrDefault(s => s.Name == "Football");
-                var captain = userManager.FindByNameAsync("charliekirk@gmail.com").Result;
-
-                // Si ambos existen, creamos el equipo usando el constructor de tu compañero
-                if (sport != null && captain != null) {
-                    var team = new Team(
-                        id: 0, 
-                        name: "Sporting Albacete", 
-                        description: "Amateur football team from Albacete.", 
-                        maxMembers: 23, 
-                        sportId: sport.Id, 
-                        captainId: captain.Id
-                    ) 
-                    {
-                        MinAge = 18,
-                        MaxAge = 60
-                    };
-                    dbcontext.Teams.Add(team);
-                }
-            }
-
-            dbcontext.SaveChanges();
-
-            if (dbcontext.Teams.FirstOrDefault(t => t.Name == "Hoya-Gonzalo Clippers") == null) {
-                
-                // Buscamos el deporte y el usuario que hemos creado en los métodos anteriores
-                var sport = dbcontext.Sports.FirstOrDefault(s => s.Name == "Football");
-                var captain = userManager.FindByNameAsync("tucalvitofavorito@gmail.com").Result;
-
-                // Si ambos existen, creamos el equipo usando el constructor de tu compañero
-                if (sport != null && captain != null) {
-                    var team = new Team(
-                        id: 1, 
-                        name: "Hoya-Gonzalo Clippers", 
-                        description: "Professional football team from Hoya-Gonzalo.", 
-                        maxMembers: 23, 
-                        sportId: sport.Id, 
-                        captainId: captain.Id
-                    ) 
-                    {
-                        MinAge = 18,
-                        MaxAge = 60
-                    };
-                    dbcontext.Teams.Add(team);
-                }
-            }
-
-            dbcontext.SaveChanges();
-        }
-        */
+       
 
     }
 }
