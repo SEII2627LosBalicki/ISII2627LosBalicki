@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppForSEII.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20261001182216_CreateIdentitySchema")]
-    partial class CreateIdentitySchema
+    [Migration("20261002080627_CreateIdentitSchema")]
+    partial class CreateIdentitSchema
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -246,6 +246,70 @@ namespace AppForSEII.API.Migrations
                     b.ToTable("Sports");
                 });
 
+            modelBuilder.Entity("AppForSEII.API.Models.Team", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CaptainId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("MaxAge")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MaxMembers")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MinAge")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(9)
+                        .HasColumnType("nvarchar(9)");
+
+                    b.Property<int>("SportId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CaptainId");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.HasIndex("SportId");
+
+                    b.ToTable("Teams");
+                });
+
+            modelBuilder.Entity("AppForSEII.API.Models.TeamInvitation", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("TeamId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("InvitationAccepted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("InvitationMessage")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.HasKey("UserId", "TeamId");
+
+                    b.HasIndex("TeamId");
+
+                    b.ToTable("TeamInvitations");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -476,6 +540,44 @@ namespace AppForSEII.API.Migrations
                     b.Navigation("RefereeGroup");
                 });
 
+            modelBuilder.Entity("AppForSEII.API.Models.Team", b =>
+                {
+                    b.HasOne("AppForSEII.API.Models.ApplicationUser", "Captain")
+                        .WithMany("CaptainOf")
+                        .HasForeignKey("CaptainId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AppForSEII.API.Models.Sport", "Sport")
+                        .WithMany("Teams")
+                        .HasForeignKey("SportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Captain");
+
+                    b.Navigation("Sport");
+                });
+
+            modelBuilder.Entity("AppForSEII.API.Models.TeamInvitation", b =>
+                {
+                    b.HasOne("AppForSEII.API.Models.Team", "Team")
+                        .WithMany("TeamInvitations")
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("AppForSEII.API.Models.ApplicationUser", "User")
+                        .WithMany("TeamInvitations")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Team");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -549,7 +651,11 @@ namespace AppForSEII.API.Migrations
 
             modelBuilder.Entity("AppForSEII.API.Models.ApplicationUser", b =>
                 {
+                    b.Navigation("CaptainOf");
+
                     b.Navigation("ResponsibleOf");
+
+                    b.Navigation("TeamInvitations");
                 });
 
             modelBuilder.Entity("AppForSEII.API.Models.Game", b =>
@@ -562,6 +668,13 @@ namespace AppForSEII.API.Migrations
             modelBuilder.Entity("AppForSEII.API.Models.Sport", b =>
                 {
                     b.Navigation("Games");
+
+                    b.Navigation("Teams");
+                });
+
+            modelBuilder.Entity("AppForSEII.API.Models.Team", b =>
+                {
+                    b.Navigation("TeamInvitations");
                 });
 
             modelBuilder.Entity("RefereeGroup", b =>

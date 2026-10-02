@@ -32,14 +32,14 @@ namespace AppForSEII.API.Data
             catch (Exception ex) {
                 logger.LogError(ex, "An error occurred seeding the Sports in the Database.");
             }
-            /*
+            
             try {
                 SeedTeams(dbContext, userManager);
             }
             catch (Exception ex) {
                 logger.LogError(ex, "An error occurred seeding the Teams in the Database.");
             }
-            */
+            
 
             try {
                 SeedGames(dbContext, userManager);
@@ -200,6 +200,50 @@ namespace AppForSEII.API.Data
                 }
                 
                 dbContext.SaveChanges();
+            }
+        }
+
+
+        public static void SeedTeams(ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager)
+        {
+            if (dbContext.Teams.FirstOrDefault(t => t.Name == "ColoColo") == null)
+            {
+                var sport = dbContext.Sports.FirstOrDefault(s => s.Name == "Football");
+                var captain = userManager.FindByNameAsync("charliekirk@gmail.com").Result;
+                var invitedPlayer = userManager.FindByNameAsync("tucalvitofavorito@gmail.com").Result;
+
+                if (sport != null && captain != null)
+                {
+                    var team = new Team(0, "ColoColo", 15, 18, 50, sport, captain);
+
+                    dbContext.Teams.Add(team);
+                    dbContext.SaveChanges();
+
+                    if (invitedPlayer != null && dbContext.TeamInvitations.Find(invitedPlayer.Id, team.Id) == null)
+                    {
+                        var invitation = new TeamInvitation(
+                            invitedPlayer.Id,
+                            team.Id,
+                            "Join our team",
+                            invitationAccepted: true
+                        );
+                        dbContext.TeamInvitations.Add(invitation);
+                        dbContext.SaveChanges();
+                    }
+                }
+            }
+
+            if (dbContext.Teams.FirstOrDefault(t => t.Name == "SanMarino") == null)
+            {
+                var sport = dbContext.Sports.FirstOrDefault(s => s.Name == "Padel");
+                var captain = userManager.FindByEmailAsync("tucalvitofavorito@gmail.com").Result;
+
+                if (sport != null && captain != null)
+                {
+                    var team = new Team(0, "SanMarino", 4, 16, 85, sport, captain);
+                    dbContext.Teams.Add(team);
+                    dbContext.SaveChanges();
+                }
             }
         }
 

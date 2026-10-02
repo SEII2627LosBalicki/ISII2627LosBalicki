@@ -22,4 +22,5 @@ public class Sport
 
     public IList<Game> Games { get; set; } = new List<Game>();// Navigation property to Game
     
+    public IList<Team> Teams { get; set; } = new List<Team>();
 }   
