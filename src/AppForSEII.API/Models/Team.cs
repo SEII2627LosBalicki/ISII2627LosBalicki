@@ -22,9 +22,9 @@ public class Team {
         MaxAge = maxAge;
 
         Sport = sport;
-        SportId = sport?.Id ?? 0;
+        SportId = sport?.Id ?? 0; //if sport = null, SportID=0
         Captain = captain;
-        CaptainId = captain?.Id ?? string.Empty;
+        CaptainId = captain?.Id ?? string.Empty; //if captain = null, CaptainId is empty
         TeamInvitations = new List<TeamInvitation>();
     }
 
@@ -37,13 +37,11 @@ public class Team {
     public int MaxAge { get; set; } = 3;
 
     // 1..N Sport
-    [ForeignKey(nameof(SportId))]
     public int SportId { get; set; }
     public Sport Sport { get; set; } = null!; //not null
 
     // 1..N ApplicationUser(Captain)
     public string CaptainId { get; set; } = string.Empty;
-    [ForeignKey(nameof(CaptainId))]
     public ApplicationUser Captain { get; set; } = null!;
 
     // N..N through TeamInvitation

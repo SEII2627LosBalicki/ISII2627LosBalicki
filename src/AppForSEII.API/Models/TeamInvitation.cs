@@ -22,12 +22,9 @@ public class TeamInvitation
 
     public string UserId { get; set; } = "0";
 
-    [ForeignKey(nameof(UserId))]
     public ApplicationUser User { get; set; } = null!;
 
     public int TeamId { get; set; }
-
-    [ForeignKey(nameof(TeamId))]
     [DeleteBehavior(DeleteBehavior.NoAction)]
     public Team Team { get; set; } = null!;
 
