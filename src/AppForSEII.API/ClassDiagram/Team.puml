@@ -5,8 +5,6 @@ class Team {
     + MaxMembers : int <<get>> <<set>>
     + MinAge : int <<get>> <<set>> = 3
     + MaxAge : int <<get>> <<set>> = 3
-    + Team()
-    + Team(id:int, name :string, maxMembers:int, minAge:int, maxAge:int, maxAge:int, description:stirng?)
 
 }
 @enduml
