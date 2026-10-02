@@ -4,8 +4,11 @@ hide methods
 !include Sport.puml
 !include ApplicationUser.puml
 !include GameInvitation.puml
+!include Team.puml
 
 ApplicationUser "ResponsibleFor" o-- "0..* ResponsibleOf" Game
+ApplicationUser "Captain" o-- "0..* CaptainOf" Team
 Sport "Sport" o-- "0..* Games" Game
 Game "GameInvited" o-- "0..* GameInvitations" GameInvitation
+Team "TeamInvited" o-- "0..* GameInvitations" GameInvitation
 @enduml
