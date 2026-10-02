@@ -19,12 +19,21 @@ namespace AppForSEII.API.Data {
                 logger.LogError(ex, "An error occurred seeding the Users in the Database.");
             }
 
-            try 
-            {
-                SeedSportsGamesAndReferees(dbContext);
+            try {
+                // Inicializa deportes y partidos base
+                SeedSportsAndGames(dbContext);
             }
             catch (Exception ex) {
-                logger.LogError(ex, "An error occurred seeding the Sports, Games and Referees in the Database.");
+                logger.LogError(ex, "An error occurred seeding the Sports and Games in the Database.");
+            }
+
+            try {
+                var game = dbContext.Games.FirstOrDefault(g => g.Name == "Soccer Match 1");
+                // Inicializa el caso de uso Add Referee Group
+                SeedRefereeGroup(dbContext, game);
+            }
+            catch (Exception ex) {
+                logger.LogError(ex, "An error occurred seeding the Referee Group in the Database.");
             }
         }
 
@@ -40,6 +49,7 @@ namespace AppForSEII.API.Data {
         }
 
         public static void SeedUsers(UserManager<ApplicationUser> userManager, List<string> roles) {
+            // Administrator
             if (userManager.FindByNameAsync("elena@uclm.es").Result == null) {
                 ApplicationUser user = new ApplicationUser("1", "Elena", "Navarro Martínez", "elena@uclm.es");
                 user.EmailConfirmed = true;
@@ -52,6 +62,7 @@ namespace AppForSEII.API.Data {
                 }
             }
 
+            // Referees
             if (userManager.FindByNameAsync("referee1@uclm.es").Result == null) {
                 Referee referee = new Referee("2", "Carlos", "Mateo Gómez", "referee1@uclm.es", yearsRefereeing: 5, rating: 4);
                 referee.EmailConfirmed = true;
@@ -75,9 +86,22 @@ namespace AppForSEII.API.Data {
                     userManager.AddToRoleAsync(referee, roles[1]).Wait();
                 }
             }
+
+            // Standard User
+            if (userManager.FindByNameAsync("peter@uclm.es").Result == null) {
+                ApplicationUser user = new ApplicationUser("4", "Peter", "Jackson", "peter@uclm.es");
+                user.EmailConfirmed = true;
+
+                var result = userManager.CreateAsync(user, "OtherPass12$");
+                result.Wait();
+
+                if (result.IsCompletedSuccessfully) {
+                    userManager.AddToRoleAsync(user, roles[2]).Wait();
+                }
+            }
         }
 
-        public static void SeedSportsGamesAndReferees(ApplicationDbContext dbContext) {
+        public static void SeedSportsAndGames(ApplicationDbContext dbContext) {
             var sport = dbContext.Sports.FirstOrDefault(s => s.Name == "Soccer");
             if (sport == null) {
                 sport = new Sport(0, "Soccer", "Soccer is a team sport played between two teams of eleven players with a spherical ball.", "The objective of the game is to score by getting the ball into the opposing goal.")
@@ -90,10 +114,8 @@ namespace AppForSEII.API.Data {
             }
 
             var user = dbContext.Users.FirstOrDefault(u => u.UserName == "elena@uclm.es");
-            var game = dbContext.Games.FirstOrDefault(g => g.Name == "Soccer Match 1");
-
-            if (game == null && user != null) {
-                game = new Game
+            if (user != null && dbContext.Games.FirstOrDefault(g => g.Name == "Soccer Match 1") == null) {
+                var game = new Game
                 {
                     Name = "Soccer Match 1",
                     Date = DateTime.Now.AddDays(7),
@@ -107,7 +129,9 @@ namespace AppForSEII.API.Data {
                 dbContext.Games.Add(game);
                 dbContext.SaveChanges();
             }
+        }
 
+        public static void SeedRefereeGroup(ApplicationDbContext dbContext, Game? game) {
             if (game != null && !dbContext.RefereeGroups.Any(rg => rg.Name == "Referee Group 1")) {
                 var refereeGroup = new RefereeGroup("Referee Group 1", game.Id, "Group of referees for Soccer Match 1", "Follow the official RFEF rules.");
                 dbContext.RefereeGroups.Add(refereeGroup);
@@ -117,11 +141,11 @@ namespace AppForSEII.API.Data {
                 var ref2 = dbContext.Referees.FirstOrDefault(r => r.UserName == "referee2@uclm.es");
 
                 if (ref1 != null) {
-                    var assignment1 = new RefereeAssignedTo(refereeGroup.Id, ref1.Id, "Main referee for Soccer Match 1", "Responsible for enforcing the rules and making final decisions during the match.");
+                    var assignment1 = new RefereeAssignedTo(refereeGroup.Id, ref1.Id, "Main referee", "Responsible for enforcing the rules and making final decisions during the match.");
                     dbContext.RefereeAssignedTos.Add(assignment1);
                 }
                 if (ref2 != null) {
-                    var assignment2 = new RefereeAssignedTo(refereeGroup.Id, ref2.Id, "Assistant referee for Soccer Match 1", "Responsible for assisting the main referee in enforcing the rules and making decisions during the match.");
+                    var assignment2 = new RefereeAssignedTo(refereeGroup.Id, ref2.Id, "Assistant referee", "Responsible for assisting the main referee in enforcing the rules and making decisions during the match.");
                     dbContext.RefereeAssignedTos.Add(assignment2);
                 }
                 dbContext.SaveChanges();
