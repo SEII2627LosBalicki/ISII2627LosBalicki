@@ -1,6 +1,7 @@
 namespace AppForSEII.API.Models;
 using Microsoft.EntityFrameworkCore;
 
+[PrimaryKey(nameof(RefereeGroupId), nameof(RefereeId))]
 public class RefereeAssignedTo
 {
 
@@ -16,13 +17,11 @@ public class RefereeAssignedTo
         AcceptedAssignment = acceptedAssignment;
     }
 
-    [Key]
-    public int Id { get; set; }
     
-    [Required]
+    
+    
     public int RefereeGroupId { get; set; }
 
-    [Required]
     public string RefereeId { get; set; } = "0";
 
     public bool AcceptedAssignment { get; set; } = false;
