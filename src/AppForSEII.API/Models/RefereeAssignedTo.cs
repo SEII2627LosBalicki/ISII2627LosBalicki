@@ -18,9 +18,6 @@ public class RefereeAssignedTo
         AcceptedAssignment = acceptedAssignment;
     }
 
-    
-    
-    
     public int RefereeGroupId { get; set; }
 
     public string RefereeId { get; set; } = "0";
@@ -36,8 +33,8 @@ public class RefereeAssignedTo
 
     [ForeignKey(nameof(RefereeGroupId))]
     [DeleteBehavior(DeleteBehavior.NoAction)]
-    public RefereeGroup? RefereeGroup { get; set; } = null!;
+    public RefereeGroup RefereeGroup { get; set; } = null!;
 
     [ForeignKey(nameof(RefereeId))]
-    public Referee? Referee { get; set; } = null!;
+    public Referee Referee { get; set; } = null!;
 }
