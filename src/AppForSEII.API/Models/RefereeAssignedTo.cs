@@ -1,5 +1,6 @@
 namespace AppForSEII.API.Models;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
 
 [PrimaryKey(nameof(RefereeGroupId), nameof(RefereeId))]
 public class RefereeAssignedTo
@@ -33,7 +34,10 @@ public class RefereeAssignedTo
     [StringLength(255, MinimumLength = 3, ErrorMessage = "Between 3 and 255 characters.")]
     public string RoleDescription { get; set; } = "Between 3 and 255 chars.";
 
+    [ForeignKey(nameof(RefereeGroupId))]
     [DeleteBehavior(DeleteBehavior.NoAction)]
-    public RefereeGroup? RefereeGroup { get; set; }
-    public Referee? Referee { get; set; }
+    public RefereeGroup? RefereeGroup { get; set; } = null!;
+
+    [ForeignKey(nameof(RefereeId))]
+    public Referee? Referee { get; set; } = null!;
 }
