@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppForSEII.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20261002120613_CreateIdentitySchema")]
+    [Migration("20261007183307_CreateIdentitySchema")]
     partial class CreateIdentitySchema
     {
         /// <inheritdoc />
@@ -33,6 +33,9 @@ namespace AppForSEII.API.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<DateOnly>("BirthDate")
+                        .HasColumnType("date");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -48,6 +51,9 @@ namespace AppForSEII.API.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<int>("Gender")
+                        .HasColumnType("int");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -175,6 +181,24 @@ namespace AppForSEII.API.Migrations
                     b.ToTable("GameInvitations");
                 });
 
+            modelBuilder.Entity("AppForSEII.API.Models.InterestedIn", b =>
+                {
+                    b.Property<int>("SportId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Skill")
+                        .HasColumnType("int");
+
+                    b.HasKey("SportId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("InterestedIns");
+                });
+
             modelBuilder.Entity("AppForSEII.API.Models.RefereeAssignedTo", b =>
                 {
                     b.Property<int>("Id")
@@ -257,6 +281,9 @@ namespace AppForSEII.API.Migrations
                     b.Property<string>("CaptainId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("MaxAge")
                         .HasColumnType("int");
@@ -521,6 +548,25 @@ namespace AppForSEII.API.Migrations
                     b.Navigation("GameInvited");
                 });
 
+            modelBuilder.Entity("AppForSEII.API.Models.InterestedIn", b =>
+                {
+                    b.HasOne("AppForSEII.API.Models.Sport", "Sport")
+                        .WithMany("Interested")
+                        .HasForeignKey("SportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AppForSEII.API.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Sport");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("AppForSEII.API.Models.RefereeAssignedTo", b =>
                 {
                     b.HasOne("RefereeGroup", "RefereeGroup")
@@ -668,6 +714,8 @@ namespace AppForSEII.API.Migrations
             modelBuilder.Entity("AppForSEII.API.Models.Sport", b =>
                 {
                     b.Navigation("Games");
+
+                    b.Navigation("Interested");
 
                     b.Navigation("Teams");
                 });
