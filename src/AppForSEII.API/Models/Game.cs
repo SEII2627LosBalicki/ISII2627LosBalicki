@@ -9,16 +9,16 @@ public class Game
         GameInvitations = new List<GameInvitation>();
     }
 
-    public Game(int id, string name, DateTime date, string place, string? description, int sportId, string responsibleforId)
+    public Game(int id, string name, DateTime date, string place, string? description, Sport sport, ApplicationUser responsiblefor)
     {
         Id = id;
         Name = name;
         Date = date;
         Place = place;
         Description = description;
-
-        SportId = sportId;
-        ResponsibleForId = responsibleforId;
+        Sport = sport;
+        SportId = sport.Id;
+        ResponsibleForId = responsiblefor.Id;
     }
 
     public int Id { get; set; } // Primary key

@@ -190,7 +190,7 @@ namespace AppForSEII.API.Data {
 
                 if (sport != null && responsibleUser != null) 
                 {
-                    var game = new Game(0, "Soccer Match 1", DateTime.Now.AddDays(7), "Estadio Vallecas", "Partido amistoso inicial", sport.Id, responsibleUser.Id)
+                    var game = new Game(0, "Soccer Match 1", DateTime.Now.AddDays(7), "Estadio Vallecas", "Partido amistoso inicial", sport, responsibleUser)
                     {
                         SportId = sport.Id,
                         ResponsibleForId = responsibleUser.Id
