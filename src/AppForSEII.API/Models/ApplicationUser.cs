@@ -1,3 +1,4 @@
+using System.Data;
 using Microsoft.AspNetCore.Identity;
 
 namespace AppForSEII.API.Models;
@@ -22,6 +23,20 @@ public class ApplicationUser : IdentityUser
 
     [StringLength(50)]
     public string? Surname {get;set;}
+    public DateOnly BirthDate { get; set; }
+
+    public int Age
+    {
+        get
+        {
+            var today = DateOnly.FromDateTime(DateTime.Today);
+            var age = today.Year - BirthDate.Year;
+            if (BirthDate > today.AddYears(-age)) age--;
+            return age;
+        }
+    }
+    
+    public Gender Gender { get; set; }
 
     public IList<Team> CaptainOf { get; set; } = new List<Team>();
     

@@ -11,10 +11,10 @@ public class TeamInvitation
     {
     }
 
-    public TeamInvitation(string userId, int teamId, string invitationMessage, bool invitationAccepted = false)
+    public TeamInvitation(ApplicationUser user, Team team, string invitationMessage, bool invitationAccepted = false)
     {
-        UserId = userId;
-        TeamId = teamId;
+        User = user;
+        Team = team;
         InvitationAccepted = invitationAccepted;
         InvitationMessage = invitationMessage;
 

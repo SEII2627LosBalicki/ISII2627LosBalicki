@@ -216,7 +216,7 @@ namespace AppForSEII.API.Data {
 
                 if (sport != null && captain != null)
                 {
-                    var team = new Team(0, "ColoColo", 15, 18, 50, sport, captain);
+                    var team = new Team(0, "ColoColo", "Description for team", 15, 18, 50, sport, captain);
 
                     dbContext.Teams.Add(team);
                     dbContext.SaveChanges();
@@ -224,8 +224,8 @@ namespace AppForSEII.API.Data {
                     if (invitedPlayer != null && dbContext.TeamInvitations.Find(invitedPlayer.Id, team.Id) == null)
                     {
                         var invitation = new TeamInvitation(
-                            invitedPlayer.Id,
-                            team.Id,
+                            invitedPlayer,
+                            team,
                             "Join our team",
                             invitationAccepted: true
                         );
@@ -242,7 +242,7 @@ namespace AppForSEII.API.Data {
 
                 if (sport != null && captain != null)
                 {
-                    var team = new Team(0, "SanMarino", 4, 16, 85, sport, captain);
+                    var team = new Team(0, "SanMarino", "Description", 4, 16, 85, sport, captain);
                     dbContext.Teams.Add(team);
                     dbContext.SaveChanges();
                 }

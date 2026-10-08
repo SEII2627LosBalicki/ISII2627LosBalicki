@@ -70,6 +70,8 @@ namespace AppForSEII.API.Migrations
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     Surname = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    BirthDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    Gender = table.Column<int>(type: "int", nullable: false),
                     Discriminator = table.Column<string>(type: "nvarchar(21)", maxLength: 21, nullable: false),
                     Rating = table.Column<int>(type: "int", nullable: true),
                     YearsRefereeing = table.Column<int>(type: "int", nullable: true),
@@ -216,12 +218,38 @@ namespace AppForSEII.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "InterestedIns",
+                columns: table => new
+                {
+                    SportId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Skill = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_InterestedIns", x => new { x.SportId, x.UserId });
+                    table.ForeignKey(
+                        name: "FK_InterestedIns_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_InterestedIns_Sports_SportId",
+                        column: x => x.SportId,
+                        principalTable: "Sports",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Teams",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(9)", maxLength: 9, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     MaxMembers = table.Column<int>(type: "int", nullable: false),
                     MinAge = table.Column<int>(type: "int", nullable: false),
                     MaxAge = table.Column<int>(type: "int", nullable: false),
@@ -404,6 +432,11 @@ namespace AppForSEII.API.Migrations
                 column: "SportId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_InterestedIns_UserId",
+                table: "InterestedIns",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_RefereeAssignedTos_RefereeId",
                 table: "RefereeAssignedTos",
                 column: "RefereeId");
@@ -468,6 +501,9 @@ namespace AppForSEII.API.Migrations
 
             migrationBuilder.DropTable(
                 name: "GameInvitations");
+
+            migrationBuilder.DropTable(
+                name: "InterestedIns");
 
             migrationBuilder.DropTable(
                 name: "RefereeAssignedTos");
