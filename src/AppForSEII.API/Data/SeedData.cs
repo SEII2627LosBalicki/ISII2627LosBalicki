@@ -11,21 +11,21 @@ namespace AppForSEII.API.Data {
                 logger.LogError(ex, "An error occurred seeding the roles in the Database.");
             }
 
-            var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-            try {
-                SeedUsers(userManager, rolesNames);
-            }
-            catch (Exception ex) {
-                logger.LogError(ex, "An error occurred seeding the Users in the Database.");
-            }            
-
             try {
                 SeedSports(dbContext);
             }
             catch (Exception ex) {
                 logger.LogError(ex, "An error occurred seeding the Sports in the Database.");
             }
-            
+
+            var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            try {
+                SeedUsers(userManager, rolesNames, dbContext);
+            }
+            catch (Exception ex) {
+                logger.LogError(ex, "An error occurred seeding the Users in the Database.");
+            }            
+
             try {
                 SeedTeams(dbContext, userManager);
             }
@@ -60,7 +60,8 @@ namespace AppForSEII.API.Data {
             }
         }
 
-        public static void SeedUsers(UserManager<ApplicationUser> userManager, List<string> roles) {
+        public static void SeedUsers(UserManager<ApplicationUser> userManager, List<string> roles, ApplicationDbContext dbContext) {
+            var football = dbContext.Sports.FirstOrDefault(s => s.Name == "Football");
             if (userManager.FindByNameAsync("tucalvitofavorito@gmail.com").Result == null) {
                 ApplicationUser user = new ApplicationUser("1", "Isi", "Palazón", "tucalvitofavorito@gmail.com");
                 user.EmailConfirmed = true;
@@ -111,6 +112,7 @@ namespace AppForSEII.API.Data {
 
             if (userManager.FindByNameAsync("referee2@uclm.es").Result == null) {
                 Referee referee = new Referee("3", "Ana", "López Pérez", "referee2@uclm.es", yearsRefereeing: 3, rating: 5);
+                referee.SportForReferee = football;
                 referee.EmailConfirmed = true;
 
                 var result = userManager.CreateAsync(referee, "RefereePass123$");
@@ -123,6 +125,7 @@ namespace AppForSEII.API.Data {
             
             if (userManager.FindByNameAsync("referee1@uclm.es").Result == null) {
                 Referee referee = new Referee("4", "Carlos", "Mateo Gómez", "referee1@uclm.es", yearsRefereeing: 5, rating: 4);
+                referee.SportForReferee = football;
                 referee.EmailConfirmed = true;
                 
                 var result = userManager.CreateAsync(referee, "RefereePass123$");
@@ -137,8 +140,8 @@ namespace AppForSEII.API.Data {
         
 
         public static void SeedRefereeGroups(ApplicationDbContext dbContext, Game? game) {
-            if (game != null && !dbContext.RefereeGroups.Any(rg => rg.Name == "Referee Group 1")) {
-                var refereeGroup = new RefereeGroup("Referee Group 1", game.Id, "Group of referees for Soccer Match 1", "Follow the official RFEF rules.");
+            if (game != null && !dbContext.RefereeGroups.Any(rg => rg.Name == "RefGroup1")) {
+                var refereeGroup = new RefereeGroup("RefGroup1", game.Id, "Group of referees for Soccer Match 1", "Follow the official RFEF rules.");
                 dbContext.RefereeGroups.Add(refereeGroup);
                 dbContext.SaveChanges();
 
@@ -190,7 +193,7 @@ namespace AppForSEII.API.Data {
 
                 if (sport != null && responsibleUser != null) 
                 {
-                    var game = new Game(0, "Soccer Match 1", DateTime.Now.AddDays(7), "Estadio Vallecas", "Partido amistoso inicial", sport.Id, responsibleUser.Id)
+                    var game = new Game(0, "Soccer Match 1", DateTime.Now.AddDays(7), "Estadio Vallecas", "Partido amistoso inicial", sport, responsibleUser)
                     {
                         SportId = sport.Id,
                         ResponsibleForId = responsibleUser.Id

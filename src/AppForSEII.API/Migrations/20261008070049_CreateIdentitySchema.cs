@@ -299,7 +299,7 @@ namespace AppForSEII.API.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Rules = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     GameId = table.Column<int>(type: "int", nullable: false)
@@ -344,8 +344,6 @@ namespace AppForSEII.API.Migrations
                 name: "RefereeAssignedTos",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
                     RefereeGroupId = table.Column<int>(type: "int", nullable: false),
                     RefereeId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     AcceptedAssignment = table.Column<bool>(type: "bit", nullable: false),
@@ -354,7 +352,7 @@ namespace AppForSEII.API.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RefereeAssignedTos", x => x.Id);
+                    table.PrimaryKey("PK_RefereeAssignedTos", x => new { x.RefereeGroupId, x.RefereeId });
                     table.ForeignKey(
                         name: "FK_RefereeAssignedTos_AspNetUsers_RefereeId",
                         column: x => x.RefereeId,
@@ -439,11 +437,6 @@ namespace AppForSEII.API.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RefereeAssignedTos_RefereeGroupId",
-                table: "RefereeAssignedTos",
-                column: "RefereeGroupId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_RefereeAssignedTos_RefereeId",
                 table: "RefereeAssignedTos",
                 column: "RefereeId");
@@ -452,6 +445,12 @@ namespace AppForSEII.API.Migrations
                 name: "IX_RefereeGroups_GameId",
                 table: "RefereeGroups",
                 column: "GameId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RefereeGroups_Name",
+                table: "RefereeGroups",
+                column: "Name",
                 unique: true);
 
             migrationBuilder.CreateIndex(
