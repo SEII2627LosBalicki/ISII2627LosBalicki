@@ -548,7 +548,7 @@ namespace AppForSEII.API.Migrations
                         .IsRequired();
 
                     b.HasOne("AppForSEII.API.Models.ApplicationUser", "User")
-                        .WithMany()
+                        .WithMany("UserInterested")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -693,6 +693,8 @@ namespace AppForSEII.API.Migrations
                     b.Navigation("ResponsibleOf");
 
                     b.Navigation("TeamInvitations");
+
+                    b.Navigation("UserInterested");
                 });
 
             modelBuilder.Entity("AppForSEII.API.Models.Game", b =>
