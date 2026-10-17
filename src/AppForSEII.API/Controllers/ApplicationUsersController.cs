@@ -63,6 +63,34 @@ namespace AppForSEII.API.Controllers
             return Ok(applicationUserDTO);
         }
 
+        [HttpGet]
+        [Route("[action]")]
+        [ProducesResponseType(typeof(IList<UserForTeamDTO>), (int)HttpStatusCode.OK)]
+        public async Task<ActionResult> GetUsersForTeam(string? sportName, int? minAge, int? maxAge)
+        {
+            DateOnly today = DateOnly.FromDateTime(DateTime.Today);
+            DateOnly? maxBirthDate = minAge.HasValue ? today.AddYears(-minAge.Value) : null;
+            DateOnly? minBirthDate = maxAge.HasValue ? today.AddYears(-(maxAge.Value + 1)) : null;
+
+            var users = await _context.ApplicationUsers
+                .Include(u => u.UserInterested)
+                    .ThenInclude(i => i.Sport)
+                .Where(u => (maxBirthDate == null || u.BirthDate <= maxBirthDate.Value)
+                        && (minBirthDate == null || u.BirthDate > minBirthDate.Value)
+                        && (sportName == null || u.UserInterested.Any(i => i.Sport.Name == sportName)))
+                .OrderBy(u => u.Surname)
+                    .ThenBy(u => u.Name)
+                .Select(u => new UserForTeamDTO(
+                    u.Id,
+                    u.Name,
+                    u.Surname,
+                    u.Age,
+                    u.UserInterested.Select(i => new SportSkillDTO(i.Sport.Name, i.Skill)).ToList()))
+                .ToListAsync();
+
+            return Ok(users);
+        }
+
 
         private bool ApplicationUserDTOExists(string name, string surname)
         {
