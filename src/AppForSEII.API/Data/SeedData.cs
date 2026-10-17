@@ -47,6 +47,14 @@ namespace AppForSEII.API.Data {
             catch (Exception ex) {
                 logger.LogError(ex, "An error occurred seeding the Referee Groups in the Database.");
             }
+            try
+            {
+                SeedInterestedIns(dbContext, userManager);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error ocurred seeding the InterestedIns in the Database.");
+            }
         }
 
         public static void SeedRoles(RoleManager<IdentityRole> roleManager, List<string> roles) {
@@ -246,6 +254,35 @@ namespace AppForSEII.API.Data {
                     dbContext.Teams.Add(team);
                     dbContext.SaveChanges();
                 }
+            }
+        }
+
+
+        public static void SeedInterestedIns(ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager)
+        {
+            if (!dbContext.InterestedIns.Any())
+            {
+                var football = dbContext.Sports.FirstOrDefault(s => s.Name == "Football");
+                var padel = dbContext.Sports.FirstOrDefault(s => s.Name == "Padel");
+
+                var isi = userManager.FindByNameAsync("tucalvitofavorito@gmail.com").Result;
+                var carlos = userManager.FindByNameAsync("carloskirk@gmail.com").Result;
+                var balicki = userManager.FindByNameAsync("balicki@gmail.com").Result;
+
+                if (football != null && padel != null && isi != null && carlos != null && balicki != null)
+                {
+                    var interests = new List<InterestedIn>
+                    {
+                        new InterestedIn(football, isi, 4),
+                        new InterestedIn(padel, isi, 2),
+                        new InterestedIn(football, carlos, 5),
+                        new InterestedIn(padel, balicki, 3)
+                    };
+
+                    dbContext.InterestedIns.AddRange(interests);
+                    dbContext.SaveChanges();
+                }
+                
             }
         }
 
