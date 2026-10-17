@@ -10,12 +10,16 @@ using AppForSEII.API.Data;
 
 namespace AppForSEII.API.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
+
     public class ApplicationUsersController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger<ApplicationUsersController> _logger;
 
-        public ApplicationUsersController(ApplicationDbContext context, ILogger<ApplicationUsersController> logger)
+        public ApplicationUsersController(ApplicationDbContext context, 
+            ILogger<ApplicationUsersController> logger)
         {
             _context = context;
             _logger=logger;
