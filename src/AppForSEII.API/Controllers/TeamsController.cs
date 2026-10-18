@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Net; 
 using Microsoft.Extensions.Logging;
+using AppForSEII.API.DTOs.TeamDTOs;
 
 namespace AppForSEII.API.Controllers;
+
 
 [Route("api/[controller]")]
 [ApiController]
@@ -17,20 +19,24 @@ public sealed class TeamsController : ControllerBase
         _context = context;
     }
 
+    
+
     [HttpGet]
     [Route("[action]")]
-    [ProducesResponseType(typeof(decimal), (int)HttpStatusCode.OK)]
-    [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
-    public async Task<ActionResult> ComputeDivision(decimal op1, decimal op2)
+    [ProducesResponseType(typeof(IList<TeamForGameDTO>), (int)HttpStatusCode.OK)]
+    public async Task<ActionResult> GetTeamsForGame(string? captainName, string? sport)
     {
-        if (op2 == 0)
-        {
-            _logger.LogError($"{DateTime.Now} Exception: op2=0, division by 0");
-            return BadRequest("op2 must be different from 0");
-        }
-
-        decimal result = decimal.Round(op1 / op2, 2);
-        return Ok(result);       
+        IList<TeamForGameDTO> teams = await _context.Teams
+            .Include(t => t.Sport)
+            .Include(t => t.TeamInvitations)
+            .Include(t => t.Captain)
+                
+            .Where(t => (t.Captain.Name.Contains(captainName) || (captainName == null)) 
+                     && ( t.Sport.Name.Contains(sport) || (sport == null)))
+            .OrderBy(t => t.Name)
+            .Select(t => new TeamForGameDTO(t.Id, t.Name, t.Captain.Name, t.Captain.Surname, t.TeamInvitations.Count(ti => ti.InvitationAccepted), t.MinAge, t.MaxAge, t.Sport.Name))
+            .ToListAsync();
+        return Ok(teams);
     }
 }
     
