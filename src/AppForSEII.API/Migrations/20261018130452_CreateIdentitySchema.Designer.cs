@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppForSEII.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20261008070049_CreateIdentitySchema")]
+    [Migration("20261018130452_CreateIdentitySchema")]
     partial class CreateIdentitySchema
     {
         /// <inheritdoc />
@@ -539,7 +539,15 @@ namespace AppForSEII.API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("AppForSEII.API.Models.Team", "TeamInvited")
+                        .WithMany("GameInvitations")
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.Navigation("GameInvited");
+
+                    b.Navigation("TeamInvited");
                 });
 
             modelBuilder.Entity("AppForSEII.API.Models.InterestedIn", b =>
@@ -721,6 +729,8 @@ namespace AppForSEII.API.Migrations
 
             modelBuilder.Entity("AppForSEII.API.Models.Team", b =>
                 {
+                    b.Navigation("GameInvitations");
+
                     b.Navigation("TeamInvitations");
                 });
 

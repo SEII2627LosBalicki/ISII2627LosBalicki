@@ -219,6 +219,27 @@ namespace AppForSEII.API.Data {
             }
             dbcontext.SaveChanges();
 
+            // Invitation for the team "ColoColo" to the game "Soccer Match 1"
+            var soccerGame = dbcontext.Games.FirstOrDefault(g => g.Name == "Soccer Match 1");
+            var coloColo = dbcontext.Teams.FirstOrDefault(t => t.Name == "ColoColo");
+
+            if (soccerGame != null && coloColo != null)
+            {
+                // Check if the invitation already exists to avoid duplicates
+                if (!dbcontext.GameInvitations.Any(gi => gi.GameId == soccerGame.Id && gi.TeamId == coloColo.Id))
+                {
+                    var invitation = new GameInvitation(coloColo.Id, soccerGame.Id, "We invite you to participate in our friendly match.")
+                    {
+                        TeamInvited = coloColo,
+                        GameInvited = soccerGame,
+                        AcceptedGame = true
+                    };
+
+                    dbcontext.GameInvitations.Add(invitation);
+                    dbcontext.SaveChanges();
+                }
+            }
+
             if (dbcontext.Games.FirstOrDefault(g => g.Name == "Padel Match 1") == null) 
             {
                 var sport = dbcontext.Sports.FirstOrDefault(s => s.Name == "Padel");
@@ -226,7 +247,7 @@ namespace AppForSEII.API.Data {
 
                 if (sport != null && responsibleUser != null) 
                 {
-                    var game = new Game(1, "Padel Match 1", DateTime.Now.AddDays(7), "MasQuePadel", "Pachanguita", sport, responsibleUser)
+                    var game = new Game(0, "Padel Match 1", DateTime.Now.AddDays(7), "MasQuePadel", "Pachanguita", sport, responsibleUser)
                     {
                         SportId = sport.Id,
                         ResponsibleForId = responsibleUser.Id
