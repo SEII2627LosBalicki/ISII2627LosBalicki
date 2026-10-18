@@ -19,6 +19,6 @@ public class GameInvitation
     public string Message { get; set; } = "Message must have more than 10 characters."; // Message must have more than 10 characters
 
     // Navigation properties
-    // public Team TeamInvited { get; set; } -> **CUANDO EXISTA LA CLASE TEAM, DESCOMENTAR ESTA LINEA**
+    public Team TeamInvited { get; set; }
     public Game GameInvited { get; set; } = null!; // Navigation property to Game
 }
