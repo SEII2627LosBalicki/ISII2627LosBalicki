@@ -62,6 +62,8 @@ namespace AppForSEII.API.Data {
 
         public static void SeedUsers(UserManager<ApplicationUser> userManager, List<string> roles, ApplicationDbContext dbContext) {
             var football = dbContext.Sports.FirstOrDefault(s => s.Name == "Football");
+            var padel = dbContext.Sports.FirstOrDefault(s => s.Name == "Padel");
+
             if (userManager.FindByNameAsync("tucalvitofavorito@gmail.com").Result == null) {
                 ApplicationUser user = new ApplicationUser("1", "Isi", "Palazón", "tucalvitofavorito@gmail.com");
                 user.EmailConfirmed = true;
@@ -135,6 +137,19 @@ namespace AppForSEII.API.Data {
                     userManager.AddToRoleAsync(referee, roles[1]).Wait(); // Referee role
                 }
             }
+
+            if (userManager.FindByNameAsync("referee3@uclm.es").Result == null) {
+                Referee referee = new Referee("6", "Koldo", "García", "referee3@uclm.es", yearsRefereeing: 2, rating: 2);
+                referee.SportForReferee = padel;
+                referee.EmailConfirmed = true;
+                
+                var result = userManager.CreateAsync(referee, "RefereePass123$");
+                result.Wait();
+
+                if (result.IsCompletedSuccessfully) {
+                    userManager.AddToRoleAsync(referee, roles[1]).Wait(); // Referee role
+                }
+            }
         }
 
         
@@ -194,6 +209,24 @@ namespace AppForSEII.API.Data {
                 if (sport != null && responsibleUser != null) 
                 {
                     var game = new Game(0, "Soccer Match 1", DateTime.Now.AddDays(7), "Estadio Vallecas", "Partido amistoso inicial", sport, responsibleUser)
+                    {
+                        SportId = sport.Id,
+                        ResponsibleForId = responsibleUser.Id
+                    };
+                    
+                    dbcontext.Games.Add(game);
+                }
+            }
+            dbcontext.SaveChanges();
+
+            if (dbcontext.Games.FirstOrDefault(g => g.Name == "Padel Match 1") == null) 
+            {
+                var sport = dbcontext.Sports.FirstOrDefault(s => s.Name == "Padel");
+                var responsibleUser = userManager.FindByNameAsync("balicki@gmail.com").Result;
+
+                if (sport != null && responsibleUser != null) 
+                {
+                    var game = new Game(1, "Padel Match 1", DateTime.Now.AddDays(7), "MasQuePadel", "Pachanguita", sport, responsibleUser)
                     {
                         SportId = sport.Id,
                         ResponsibleForId = responsibleUser.Id
