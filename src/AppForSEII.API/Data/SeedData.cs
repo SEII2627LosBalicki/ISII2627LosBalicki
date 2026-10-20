@@ -75,6 +75,7 @@ namespace AppForSEII.API.Data {
             if (userManager.FindByNameAsync("tucalvitofavorito@gmail.com").Result == null) {
                 ApplicationUser user = new ApplicationUser("1", "Isi", "Palazón", "tucalvitofavorito@gmail.com");
                 user.EmailConfirmed = true;
+                user.BirthDate = new DateOnly(1999, 2, 2);
 
                 var result = userManager.CreateAsync(user, "Password1234%");
                 result.Wait();
@@ -87,6 +88,7 @@ namespace AppForSEII.API.Data {
             if (userManager.FindByNameAsync("carloskirk@gmail.com").Result == null) {
                 ApplicationUser user = new ApplicationUser("2", "Carlos", "Kirk", "carloskirk@gmail.com");
                 user.EmailConfirmed = true;
+                user.BirthDate = new DateOnly(1989, 3, 5);
 
                 var result = userManager.CreateAsync(user, "Password1234%");
                 result.Wait();
@@ -98,7 +100,8 @@ namespace AppForSEII.API.Data {
 
             if (userManager.FindByNameAsync("balicki@gmail.com").Result == null) {
                 ApplicationUser user = new ApplicationUser("0", "Kryzstof", "Balicki", "balicki@gmail.com");
-                user.EmailConfirmed = true;          
+                user.EmailConfirmed = true;
+                user.BirthDate = new DateOnly(2001, 1, 1);
 
                 var result = userManager.CreateAsync(user, "Password1234%");
                 result.Wait();
@@ -111,6 +114,7 @@ namespace AppForSEII.API.Data {
             if (userManager.FindByNameAsync("omarsgirlfriend@gmail.com").Result == null) {
                 ApplicationUser user = new ApplicationUser("5", "Melanni", "Enciso", "omarsgirlfriend@gmail.com");
                 user.EmailConfirmed = true;
+                user.BirthDate = new DateOnly(2004, 11, 16);
 
                 var result = userManager.CreateAsync(user, "Password1234%");
                 result.Wait();
@@ -124,6 +128,7 @@ namespace AppForSEII.API.Data {
                 Referee referee = new Referee("3", "Ana", "López Pérez", "referee2@uclm.es", yearsRefereeing: 3, rating: 5);
                 referee.SportForReferee = football;
                 referee.EmailConfirmed = true;
+                referee.BirthDate = new DateOnly(1980, 1, 19);
 
                 var result = userManager.CreateAsync(referee, "RefereePass123$");
                 result.Wait();
@@ -137,6 +142,7 @@ namespace AppForSEII.API.Data {
                 Referee referee = new Referee("4", "Carlos", "Mateo Gómez", "referee1@uclm.es", yearsRefereeing: 5, rating: 4);
                 referee.SportForReferee = football;
                 referee.EmailConfirmed = true;
+                referee.BirthDate = new DateOnly(1979, 10, 20);
                 
                 var result = userManager.CreateAsync(referee, "RefereePass123$");
                 result.Wait();
@@ -150,6 +156,7 @@ namespace AppForSEII.API.Data {
                 Referee referee = new Referee("6", "Koldo", "García", "referee3@uclm.es", yearsRefereeing: 2, rating: 2);
                 referee.SportForReferee = padel;
                 referee.EmailConfirmed = true;
+                referee.BirthDate = new DateOnly(1991, 8, 28);
                 
                 var result = userManager.CreateAsync(referee, "RefereePass123$");
                 result.Wait();
