@@ -10,7 +10,7 @@ public class TeamDetailDTO
         
     }
 
-    public TeamDetailDTO(int id, string name, string? captainName, string? captainSurname,string sportName, int minAge, int maxAge, int captainAge, IList<InvitedPlayerDTO> invitedPlayers)
+    public TeamDetailDTO(int id, string name, string? captainName, string? captainSurname,string sportName, int minAge, int maxAge, int captainAge, IList<TeamInvitationDTO> invitedPlayers)
     {
         Id = id;
         Name = name;
@@ -33,7 +33,7 @@ public class TeamDetailDTO
     public int MinAge { get; set; }
     public int MaxAge { get; set; }
     public string SportName { get; set; } = string.Empty;
-    public IList<InvitedPlayerDTO> InvitedPlayers { get; set; } = new List<InvitedPlayerDTO>();
+    public IList<TeamInvitationDTO> InvitedPlayers { get; set; } = new List<TeamInvitationDTO>();
 
         public override bool Equals(object? obj)
     {

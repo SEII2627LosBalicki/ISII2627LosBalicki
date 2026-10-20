@@ -57,7 +57,7 @@ public sealed class TeamsController : ControllerBase
                 t.MinAge,
                 t.MaxAge,
                 t.Captain.Age,
-                t.TeamInvitations.Select(ti => new InvitedPlayerDTO(
+                t.TeamInvitations.Select(ti => new TeamInvitationDTO(
                     ti.User.Name,
                     ti.User.Surname,
                     ti.User.Age,

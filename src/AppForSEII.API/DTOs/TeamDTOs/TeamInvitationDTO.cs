@@ -2,15 +2,15 @@ using System.ComponentModel.DataAnnotations;
 
 namespace AppForSEII.API.DTOs.TeamDTOs;
 
-public class InvitedPlayerDTO
+public class TeamInvitationDTO
 {
 
-    public InvitedPlayerDTO()
+    public TeamInvitationDTO()
     {
         
     }
 
-    public InvitedPlayerDTO(string? name, string? surname, int age, string invitationMessage)
+    public TeamInvitationDTO(string? name, string? surname, int age, string invitationMessage)
     {
         Name = name;
         Surname = surname;
@@ -26,7 +26,7 @@ public class InvitedPlayerDTO
 
     public override bool Equals(object? obj)
     {
-        return obj is InvitedPlayerDTO dTO &&
+        return obj is TeamInvitationDTO dTO &&
                Name == dTO.Name &&
                Surname == dTO.Surname &&
                Age == dTO.Age &&
