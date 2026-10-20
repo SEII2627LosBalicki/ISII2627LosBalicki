@@ -1,3 +1,4 @@
+using AppForSEII.API.DTOs.RefereeDTOs;
 namespace AppForSEII.API.Controllers;
 
 
@@ -29,6 +30,22 @@ namespace AppForSEII.API.Controllers;
             }
             decimal result = decimal.Round(op1 / op2, 2);
             return Ok(result);
+        }
+
+        [HttpGet]
+        [Route("[action]")]
+        [ProducesResponseType(typeof(IList<RefereeForRefereeGroupDTO>), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetRefereesForRefereeGroup(int? yearsRefereeing)
+        {
+            IList<RefereeForRefereeGroupDTO> referees = await _context.Referees
+                .Include(r => r.SportForReferee)
+                .Where(r => r.YearsRefereeing > 0
+                    && (yearsRefereeing == null || r.YearsRefereeing >= yearsRefereeing))
+                .OrderBy(r => r.Surname)
+                .Select(r => new RefereeForRefereeGroupDTO(r.Id, r.Name, r.Surname,
+                    r.YearsRefereeing, r.Rating, r.SportForReferee!.Name))
+                .ToListAsync();
+            return Ok(referees);
         }
         
     }
