@@ -38,5 +38,39 @@ public sealed class TeamsController : ControllerBase
             .ToListAsync();
         return Ok(teams);
     }
+
+
+    [HttpGet]
+    [Route("[action]")]
+    [ProducesResponseType(typeof(TeamDetailDTO), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    public async Task<ActionResult> GetTeam(int id)
+    {
+        var teamDTO = await _context.Teams
+            .Where(t => t.Id == id)
+            .Select(t => new TeamDetailDTO(
+                t.Id,
+                t.Name,
+                t.Captain.Name,
+                t.Captain.Surname,
+                t.Sport.Name,
+                t.MinAge,
+                t.MaxAge,
+                t.Captain.Age,
+                t.TeamInvitations.Select(ti => new InvitedPlayerDTO(
+                    ti.User.Name,
+                    ti.User.Surname,
+                    ti.User.Age,
+                    ti.InvitationMessage)).ToList()))
+            .FirstOrDefaultAsync();
+
+        if (teamDTO == null)
+        {
+            _logger.LogError($"Error: Team with id {id} does not exist");
+            return NotFound();
+        }
+
+        return Ok(teamDTO);
+    }
 }
     
