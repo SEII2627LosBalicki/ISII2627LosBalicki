@@ -51,4 +51,6 @@ public class Team {
     // N..N through TeamInvitation
 
     public IList<TeamInvitation> TeamInvitations { get; set; }
+
+    public IList<GameInvitation> GameInvitations { get; set; }
 }
