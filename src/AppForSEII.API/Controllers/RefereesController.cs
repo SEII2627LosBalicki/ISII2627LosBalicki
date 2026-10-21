@@ -22,13 +22,15 @@ namespace AppForSEII.API.Controllers;
         [HttpGet]
         [Route("[action]")]
         [ProducesResponseType(typeof(IList<RefereeForRefereeGroupDTO>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetRefereesForRefereeGroup(int? yearsRefereeing)
+        public async Task<IActionResult> GetRefereesForRefereeGroup(string? sportName,int? yearsRefereeing)
         {
             IList<RefereeForRefereeGroupDTO> referees = await _context.Referees
                 .Include(r => r.SportForReferee)
                 .Where(r => r.YearsRefereeing > 0
-                    && (yearsRefereeing == null || r.YearsRefereeing >= yearsRefereeing))
+                    && (yearsRefereeing == null || r.YearsRefereeing >= yearsRefereeing)
+                    && (sportName == null || r.SportForReferee!.Name == sportName))
                 .OrderBy(r => r.Surname)
+                    .ThenBy(r => r.Name)
                 .Select(r => new RefereeForRefereeGroupDTO(r.Id, r.Name, r.Surname,
                     r.YearsRefereeing, r.Rating, r.SportForReferee!.Name))
                 .ToListAsync();

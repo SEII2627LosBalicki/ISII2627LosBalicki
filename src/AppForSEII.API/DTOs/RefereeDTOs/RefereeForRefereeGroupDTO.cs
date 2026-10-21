@@ -17,10 +17,15 @@ public class RefereeForRefereeGroupDTO
     }
 
     public string Id { get; set; } = string.Empty;
+    [StringLength(50)]
     public string? Name { get; set; }
+    [StringLength(50)]
     public string? Surname { get; set; }
+    [Range(1, int.MaxValue)]
     public int YearsRefereeing { get; set; }
+    [Range(1, 5)]
     public int Rating { get; set; }
+    [StringLength(50)]
     public string Sport { get; set; } = string.Empty;
 
     public override bool Equals(object? obj)
