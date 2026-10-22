@@ -8,7 +8,7 @@ public class TeamForGameDetailDTO
         
     }
 
-    public TeamForGameDetailDTO(int id, string name, string captainName, string captainSurname, int numberOfMembers, int minAge, int maxAge, string sport, string message)
+    public TeamForGameDetailDTO(int id, string name, string? captainName, string? captainSurname, int numberOfMembers, int minAge, int maxAge, string sport, string message)
     {
         Id = id;
         Name = name;
@@ -25,8 +25,8 @@ public class TeamForGameDetailDTO
 
         [StringLength(9, MinimumLength = 4)]
         public string Name { get; set; }
-        public string CaptainName { get; set; }
-        public string CaptainSurname { get; set; }
+        public string? CaptainName { get; set; }
+        public string? CaptainSurname { get; set; }
         public int NumberOfMembers { get; set; }
 
         [Range(3, 100)]
