@@ -1,4 +1,3 @@
-using System.Data;
 using Microsoft.AspNetCore.Identity;
 
 namespace AppForSEII.API.Models;
@@ -16,6 +15,17 @@ public class ApplicationUser : IdentityUser
         Surname = surname;
         UserName = userName;
         Email = userName;
+    }
+
+    public ApplicationUser(string id, string name, string surname, string userName, DateOnly birthDate, Gender gender)
+    {
+        Id = id;
+        Name = name;
+        Surname = surname;
+        UserName = userName;
+        Email = userName;
+        BirthDate = birthDate;
+        Gender = gender;
     }
 
     [StringLength(50)]
@@ -44,6 +54,6 @@ public class ApplicationUser : IdentityUser
     
 
     // Navigation property: Games where this user acts as captain/responsible (1:N)
-    public ICollection<Game> ResponsibleOf { get; set; } = new List<Game>();
+    public IList<Game> ResponsibleOf { get; set; } = new List<Game>();
     
 }
