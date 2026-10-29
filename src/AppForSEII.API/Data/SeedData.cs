@@ -112,6 +112,22 @@ namespace AppForSEII.API.Data {
                 }
             }
 
+            if (userManager.FindByNameAsync("troybolton@gmail.com").Result == null) {
+                ApplicationUser user = new ApplicationUser("7", "Troy", "Bolton", "troybolton@gmail.com")
+                {
+                    EmailConfirmed = true,
+                    BirthDate = DateOnly.Parse("1995-05-15"),
+                    Gender = Gender.Male
+                };
+
+                var result = userManager.CreateAsync(user, "Password1234%");
+                result.Wait();
+
+                if (result.IsCompletedSuccessfully) {
+                    userManager.AddToRoleAsync(user, roles[2]).Wait(); // Rol "User"
+                }
+            }
+
             if (userManager.FindByNameAsync("referee2@uclm.es").Result == null) {
                 Referee referee = new Referee("3", "Ana", "López Pérez", "referee2@uclm.es", yearsRefereeing: 3, rating: 5);
                 referee.SportForReferee = football;
@@ -297,6 +313,19 @@ namespace AppForSEII.API.Data {
                 if (sport != null && captain != null)
                 {
                     var team = new Team(0, "SanMarino", "Description", 4, 16, 85, sport, captain);
+                    dbContext.Teams.Add(team);
+                    dbContext.SaveChanges();
+                }
+            }
+
+            if (dbContext.Teams.FirstOrDefault(t => t.Name == "Wildcats") == null)
+            {
+                var sport = dbContext.Sports.FirstOrDefault(s => s.Name == "Football");
+                var captain = userManager.FindByEmailAsync("troybolton@gmail.com").Result;
+
+                if (sport != null && captain != null)
+                {
+                    var team = new Team(0, "Wildcats", "Team from East High School", 18, 18, 40, sport, captain);
                     dbContext.Teams.Add(team);
                     dbContext.SaveChanges();
                 }
