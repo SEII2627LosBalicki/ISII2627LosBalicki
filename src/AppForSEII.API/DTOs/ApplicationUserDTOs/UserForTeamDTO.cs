@@ -18,7 +18,7 @@ public class UserForTeamDTO
     }
 
     [StringLength(50)]
-    public string? Id {get;set;}
+    public string Id {get;set;}
 
     [StringLength(50)]
     public string? Name{ get;set;}
