@@ -60,6 +60,7 @@ public sealed class TeamsController : ControllerBase
                 t.TeamInvitations.Select(ti => new TeamInvitationDTO(
                     ti.User.Name,
                     ti.User.Surname,
+                    ti.User.Id,
                     ti.User.Age,
                     ti.InvitationMessage)).ToList()))
             .FirstOrDefaultAsync();
@@ -71,6 +72,134 @@ public sealed class TeamsController : ControllerBase
         }
 
         return Ok(teamDTO);
+    }
+
+    [HttpPost]
+    [Route("[action]")]
+    [ProducesResponseType(typeof(TeamDetailDTO), (int)HttpStatusCode.Created)]
+    [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
+    public async Task<ActionResult> CreateTeam(TeamForCreateDTO teamForCreateDTO)
+    {
+
+        //Alternative flow 3
+        if (!ModelState.IsValid)
+        {
+            return BadRequest("Invalid Model");
+        }
+
+
+        //Alternative flow 3
+        if (teamForCreateDTO.MinAge > teamForCreateDTO.MaxAge)            
+        {
+            _logger.LogError($"{DateTime.Now} Exception: Minimum age can't be bigger than maximum age");
+            return BadRequest("minAge can't be greater than maxAge");
+        }
+
+        //Alternative flow 5
+        if (await _context.Teams.AnyAsync(t => t.Name == teamForCreateDTO.Name))
+        {
+            _logger.LogError($"{DateTime.Now} Exception: Can't have the same name repeated");
+            return BadRequest("Name can not be repeated");
+        }
+        
+        //Step 5
+        var sport = await _context.Sports.FirstOrDefaultAsync(s => s.Name == teamForCreateDTO.SportName);
+
+        if (sport == null)
+        {
+            _logger.LogError($"{DateTime.Now} Exception: Sport doesn't exist");
+            return NotFound("There is no sport with this name");
+        }
+
+        var captain = await _context.ApplicationUsers.FirstOrDefaultAsync(u => u.Id == teamForCreateDTO.CaptainId);
+
+        //Precondition
+        if (captain == null)
+        {
+            _logger.LogError($"{DateTime.Now} Exception: Captain doesn't exist");
+            return NotFound("There is no captain with this Id");
+        }
+
+        //Alternative flow 4
+        if (teamForCreateDTO.InvitedPlayers.Count + 1 < sport.MinimumNumberofPlayers)
+        {
+            _logger.LogError($"{DateTime.Now} Exception: Not enough members");
+            return BadRequest($"Less members than the MinimumNumberOfPlayers ({sport.MinimumNumberofPlayers}). Select more players");
+        }
+
+        //Step 5
+        var invitedUsers = new List<(ApplicationUser User, string Message)>();
+
+        foreach (var invitation in teamForCreateDTO.InvitedPlayers)
+        {
+            //Extra captain can't invite himself
+            if (invitation.Id == teamForCreateDTO.CaptainId)
+            {
+                _logger.LogError($"{DateTime.Now} Exception: The captain can't be invited");
+                return BadRequest("The captain can't be in the list of invited players");
+            }
+
+            //Extra: Player can't be invited twice
+            if (invitedUsers.Any(i => i.User.Id == invitation.Id))
+            {
+                _logger.LogError($"{DateTime.Now} Exception: User {invitation.Id} invited more than once");
+                return BadRequest($"The user {invitation.Id} is invited more than once");
+            }
+
+            //Step 3
+            var user = await _context.ApplicationUsers.FirstOrDefaultAsync(u => u.Id == invitation.Id);
+
+            if (user == null)
+            {
+                _logger.LogError($"{DateTime.Now} Exception: Invited user {invitation.Id} doesn't exist");
+                return NotFound($"There is no user with Id {invitation.Id}");
+            }
+
+            invitedUsers.Add((user, invitation.InvitationMessage));
+        }
+
+        //Extra Captain + invited can't exceed maximum number of players
+        if (invitedUsers.Count + 1 > teamForCreateDTO.MaxMembers)
+        {
+            _logger.LogError($"{DateTime.Now} Exception: Too many members");
+            return BadRequest($"Captain plus invited players exceed MaxMembers ({teamForCreateDTO.MaxMembers})");
+        }
+
+        //Step 6
+        var team = new Team(0, teamForCreateDTO.Name, teamForCreateDTO.Description, teamForCreateDTO.MaxMembers,
+            teamForCreateDTO.MinAge, teamForCreateDTO.MaxAge, sport, captain);
+
+        //Post condition invitations are created
+        foreach (var (invitedUser, message) in invitedUsers)
+        {
+            team.TeamInvitations.Add(new TeamInvitation(invitedUser, team, message));
+        }
+
+        //Post Condition team is saved
+        _context.Teams.Add(team);
+        await _context.SaveChangesAsync();
+
+        //Step 7: Show team created with its invited players
+        var teamDetailDTO = new TeamDetailDTO(
+            team.Id,
+            team.Name,
+            captain.Name,
+            captain.Surname,
+            sport.Name,
+            team.MinAge,
+            team.MaxAge,
+            captain.Age,
+            invitedUsers.Select(i => new TeamInvitationDTO(
+                i.User.Name,
+                i.User.Surname,
+                i.User.Id,
+                i.User.Age,
+                i.Message)).ToList());
+
+
+        //Step 7 201 to GetTeam
+        return CreatedAtAction(nameof(GetTeam), new { id = team.Id }, teamDetailDTO);
     }
 }
     
