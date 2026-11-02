@@ -24,11 +24,7 @@ public sealed class GamesController : ControllerBase
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult> GetGame(int id)
     {
-        if (id == null)
-        {
-            return NotFound();
-        }
-
+        
         var gameDTO = await _context.Games
             .Where(g => g.Id == id)
             .Select(g => new GameForDetailDTO(g.Id, g.Name, g.Sport.Name, g.Date, g.Place, g.Description, 
