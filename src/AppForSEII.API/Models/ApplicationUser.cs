@@ -51,6 +51,7 @@ public class ApplicationUser : IdentityUser
     public IList<Team> CaptainOf { get; set; } = new List<Team>();
     
     public IList<TeamInvitation> TeamInvitations { get; set; } = new List<TeamInvitation>();
+    public IList<InterestedIn> UserInterested {get; set; } = new List<InterestedIn>();
     
 
     // Navigation property: Games where this user acts as captain/responsible (1:N)
