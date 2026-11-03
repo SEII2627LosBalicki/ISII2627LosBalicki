@@ -5,7 +5,7 @@ name: Luis Cebrián Continuous Integration Pipeline
 
 on:
   push:
-    branches: [ "CI-LuisCebrian" ]
+    branches: [ "CI-LuisCebrian doesnt exist" ]
   pull_request:
     branches: [ "CI-LuisCebrian" ]
 
