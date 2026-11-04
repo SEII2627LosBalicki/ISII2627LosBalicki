@@ -299,9 +299,96 @@ public class CreateTeam_test : AppForSEII4SqliteUT
                 new TeamInvitationDTO("Ana", "López", "3", invited.Age, "Hola")
             });
 
+        //Test if expected and real dto match
         Assert.Equal(expected, actual);
 
+        Assert.Equal(2, _context.Teams.Count());
+        Assert.Equal(1, _context.TeamInvitations.Count());
 
+    }
+
+    [Fact]
+    [Trait("Database", "WithoutFixture")]
+    [Trait("LevelTesting", "Unit Testing")]
+    public async Task CreateTeam_SuccessWithoutInvited_test()
+    {
+        //Arrange
+        var mock = new Mock<ILogger<TeamsController>>();
+        ILogger<TeamsController> logger = mock.Object;
+        var controller = new TeamsController(logger, _context);
+
+        var dto = new TeamForCreateDTO
+        {
+            Name = "Ajedrez",
+            SportName = "Chess",
+            CaptainId = "0",
+            MaxMembers = 5,
+            InvitedPlayers = new List<TeamInvitationDTO>()
+        };
+
+        //Act
+        var result = await controller.CreateTeam(dto);
+
+        //Assert
+        var createdAtAction = Assert.IsType<CreatedAtActionResult>(result);
+        var actual = Assert.IsType<TeamDetailDTO>(createdAtAction.Value);
+
+        var captain = _context.ApplicationUsers.Find("0")!;
+
+        var expected = new TeamDetailDTO(2, "Ajedrez", "Kryzstof", "Balicki", "Chess", 3, 3, captain.Age,
+            new List<TeamInvitationDTO>());
+
+        Assert.Equal(expected, actual);
+
+        Assert.Equal(2, _context.Teams.Count());
+        Assert.Equal(0, _context.TeamInvitations.Count());
+    }
+
+    [Fact]
+    [Trait("Database", "WithoutFixture")]
+    [Trait("LevelTesting", "Unit Testing")]
+    public async Task CreateTeam_SuccessSeveralInvited_test()
+    {
+        //Arrange
+        var mock = new Mock<ILogger<TeamsController>>();
+        ILogger<TeamsController> logger = mock.Object;
+        var controller = new TeamsController(logger, _context);
+
+        var dto = new TeamForCreateDTO
+        {
+            Name = "Los Tres",
+            SportName = "Football",
+            CaptainId = "0",
+            MaxMembers = 10,
+            InvitedPlayers = new List<TeamInvitationDTO>
+            {
+                new TeamInvitationDTO { Id = "1", InvitationMessage = "Hola" },
+                new TeamInvitationDTO { Id = "3", InvitationMessage = "Vente" }
+            }
+        };
+
+        //Act
+        var result = await controller.CreateTeam(dto);
+
+        //Assert
+        var createdAtAction = Assert.IsType<CreatedAtActionResult>(result);
+        var actual = Assert.IsType<TeamDetailDTO>(createdAtAction.Value);
+
+        var captain = _context.ApplicationUsers.Find("0")!;
+        var invited1 = _context.ApplicationUsers.Find("1")!;
+        var invited3 = _context.ApplicationUsers.Find("3")!;
+
+        var expected = new TeamDetailDTO(2, "Los Tres", "Kryzstof", "Balicki", "Football", 3, 3, captain.Age,
+            new List<TeamInvitationDTO>
+            {
+                new TeamInvitationDTO("Isi", "Palazón", "1", invited1.Age, "Hola"),
+                new TeamInvitationDTO("Ana", "López", "3", invited3.Age, "Vente")
+            });
+
+        Assert.Equal(expected, actual);
+
+        Assert.Equal(2, _context.Teams.Count());
+        Assert.Equal(2, _context.TeamInvitations.Count());
     }
 
 
