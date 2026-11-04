@@ -24,26 +24,27 @@ public class GetRefereesForRefereeGroup_test : AppForSEII4SqliteUT
         _context.SaveChanges();
     }
 
-        public static IEnumerable<object[]> TestCasesFor_GetRefereesForRefereeGroup()
+        public static IEnumerable<object?[]> TestCasesFor_GetRefereesForRefereeGroup()
     {
         var koldo = new RefereeForRefereeGroupDTO("10", "Koldo", "García", 2, 2, "Padel");
         var ana = new RefereeForRefereeGroupDTO("11", "Ana", "López", 3, 5, "Football");
         var carlos = new RefereeForRefereeGroupDTO("12", "Carlos", "Mateo", 5, 4, "Football");
 
-        var allTests = new List<object[]>
+        var allTests = new List<object?[]>
         {
             // sportName, yearsRefereeing, expected result
-            new object[] { null, null, new List<RefereeForRefereeGroupDTO> { koldo, ana, carlos } },
-            new object[] { "Football", null, new List<RefereeForRefereeGroupDTO> { ana, carlos } },
-            new object[] { null, 3, new List<RefereeForRefereeGroupDTO> { ana, carlos } },
-            new object[] { "Football", 4, new List<RefereeForRefereeGroupDTO> { carlos } },
-            new object[] { "Padel", 3, new List<RefereeForRefereeGroupDTO>() }
+            new object?[] { null, null, new List<RefereeForRefereeGroupDTO> { koldo, ana, carlos } },
+            new object?[] { "Football", null, new List<RefereeForRefereeGroupDTO> { ana, carlos } },
+            new object?[] { null, 3, new List<RefereeForRefereeGroupDTO> { ana, carlos } },
+            new object?[] { "Football", 4, new List<RefereeForRefereeGroupDTO> { carlos } },
+            new object?[] { "Padel", 3, new List<RefereeForRefereeGroupDTO>() }
         };
 
         return allTests;
     }
 
-        [Theory]
+    [Theory]
+    [Trait("Database", "WithoutFixture")]
     [Trait("LevelTesting", "Unit Testing")]
     [MemberData(nameof(TestCasesFor_GetRefereesForRefereeGroup))]
     public async Task GetRefereesForRefereeGroup_Filters_test(string? sportName,
