@@ -243,6 +243,67 @@ public class CreateTeam_test : AppForSEII4SqliteUT
 
     }
 
+    [Fact]
+    [Trait("Database", "WithoutFixture")]
+    [Trait("LevelTesting", "Unit Testing")]
+    public async Task CreateTeam_TooManyPlayers_test()
+    {
+        //Arrange
+        var mock = new Mock<ILogger<TeamsController>>();
+        ILogger<TeamsController> logger = mock.Object;
+        var controller = new TeamsController(logger, _context);
+
+        var dto = new TeamForCreateDTO {SportName = "Football", CaptainId = "0", MaxMembers = 1, InvitedPlayers = new List<TeamInvitationDTO> 
+            {
+                new TeamInvitationDTO {Id = "3", InvitationMessage = "Hola"}
+            }
+        };
+        //Act
+        var result = await controller.CreateTeam(dto);
+
+        //Assert
+        var badRequest = Assert.IsType<BadRequestObjectResult>(result);
+        Assert.Equal("Captain plus invited players exceed MaxMembers (1)", badRequest.Value);
+
+    }
+
+
+    [Fact]
+    [Trait("Database", "WithoutFixture")]
+    [Trait("LevelTesting", "Unit Testing")]
+    public async Task CreateTeam_SuccessInvited_test()
+    {
+        //Arrange
+        var mock = new Mock<ILogger<TeamsController>>();
+        ILogger<TeamsController> logger = mock.Object;
+        var controller = new TeamsController(logger, _context);
+
+        var dto = new TeamForCreateDTO {Name = "Vodka Juniors", SportName = "Football", CaptainId = "0", MaxMembers = 10, InvitedPlayers = new List<TeamInvitationDTO> 
+            {
+                new TeamInvitationDTO {Id = "3", InvitationMessage = "Hola"}
+            }
+        };
+        //Act
+        var result = await controller.CreateTeam(dto);
+
+        //Assert
+        var createdAtAction = Assert.IsType<CreatedAtActionResult>(result);
+        var actual = Assert.IsType<TeamDetailDTO>(createdAtAction.Value);
+
+        var captain = _context.ApplicationUsers.Find("0")!;
+        var invited = _context.ApplicationUsers.Find("3")!;
+
+        var expected = new TeamDetailDTO(2, "Vodka Juniors", "Kryzstof", "Balicki", "Football", 3, 3, captain.Age,
+            new List<TeamInvitationDTO>
+            {
+                new TeamInvitationDTO("Ana", "López", "3", invited.Age, "Hola")
+            });
+
+        Assert.Equal(expected, actual);
+
+
+    }
+
 
     
 }
