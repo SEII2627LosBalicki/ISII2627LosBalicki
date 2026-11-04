@@ -192,5 +192,57 @@ public class CreateTeam_test : AppForSEII4SqliteUT
     }
 
 
+
+    [Fact]
+    [Trait("Database", "WithoutFixture")]
+    [Trait("LevelTesting", "Unit Testing")]
+    public async Task CreateTeam_RepeatedInvitedPlayer_test()
+    {
+        //Arrange
+        var mock = new Mock<ILogger<TeamsController>>();
+        ILogger<TeamsController> logger = mock.Object;
+        var controller = new TeamsController(logger, _context);
+
+        var dto = new TeamForCreateDTO {SportName = "Football", CaptainId = "0", InvitedPlayers = new List<TeamInvitationDTO> 
+            {
+                new TeamInvitationDTO {Id = "1", InvitationMessage = "Hola"},
+                new TeamInvitationDTO {Id = "1", InvitationMessage = "Hola"}
+            }
+        };
+        //Act
+        var result = await controller.CreateTeam(dto);
+
+        //Assert
+        var badRequest = Assert.IsType<BadRequestObjectResult>(result);
+        Assert.Equal("The user 1 is invited more than once", badRequest.Value);
+
+    }
+
+
+    [Fact]
+    [Trait("Database", "WithoutFixture")]
+    [Trait("LevelTesting", "Unit Testing")]
+    public async Task CreateTeam_NotExistingInvitedPlayer_test()
+    {
+        //Arrange
+        var mock = new Mock<ILogger<TeamsController>>();
+        ILogger<TeamsController> logger = mock.Object;
+        var controller = new TeamsController(logger, _context);
+
+        var dto = new TeamForCreateDTO {SportName = "Football", CaptainId = "0", InvitedPlayers = new List<TeamInvitationDTO> 
+            {
+                new TeamInvitationDTO {Id = "199", InvitationMessage = "Hola"}
+            }
+        };
+        //Act
+        var result = await controller.CreateTeam(dto);
+
+        //Assert
+        var notFound = Assert.IsType<NotFoundObjectResult>(result);
+        Assert.Equal("There is no user with Id 199", notFound.Value);
+
+    }
+
+
     
 }
