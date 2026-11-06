@@ -31,8 +31,8 @@ public sealed class TeamsController : ControllerBase
             .Include(t => t.TeamInvitations)
             .Include(t => t.Captain)
                 
-            .Where(t => (t.Captain.Name.Contains(captainName) || (captainName == null)) 
-                     && ( t.Sport.Name.Contains(sport) || (sport == null)))
+            .Where(t => (captainName == null || (t.Captain != null && t.Captain.Name != null && t.Captain.Name.Contains(captainName))) 
+                        && (sport == null || (t.Sport != null && t.Sport.Name != null && t.Sport.Name.Contains(sport))))
             .OrderBy(t => t.Name)
             .Select(t => new TeamForGameDTO(t.Id, t.Name, t.Captain.Name, t.Captain.Surname, t.TeamInvitations.Count(ti => ti.InvitationAccepted), t.MinAge, t.MaxAge, t.Sport.Name))
             .ToListAsync();
