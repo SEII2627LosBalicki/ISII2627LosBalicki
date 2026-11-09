@@ -46,6 +46,12 @@ public sealed class TeamsController : ControllerBase
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult> GetTeam(int id)
     {
+        if (id < 0)
+        {
+            _logger.LogError($"Error: Team with id {id} is not valid");
+            return NotFound();
+        }
+
         var teamDTO = await _context.Teams
             .Where(t => t.Id == id)
             .Select(t => new TeamDetailDTO(

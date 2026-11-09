@@ -95,4 +95,22 @@ public class GetTeam_test : AppForSEII4SqliteUT
         Assert.IsType<NotFoundResult>(result);
     }    
 
+
+    [Fact]
+    [Trait("Database", "WithoutFixture")]
+    [Trait("LevelTesting", "Unit Testing")]
+    public async Task GetTeam_NotNullOrNegative_test()
+    {
+        //Arrange
+        var mock = new Mock<ILogger<TeamsController>>();
+        ILogger<TeamsController> logger = mock.Object;
+        var controller = new TeamsController(logger, _context);
+
+        //Act
+        var result = await controller.GetTeam(-1);
+
+        //Assert
+        Assert.IsType<NotFoundResult>(result);
+    }
+
 }
