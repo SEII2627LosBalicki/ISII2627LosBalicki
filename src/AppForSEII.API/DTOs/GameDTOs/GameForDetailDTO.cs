@@ -22,12 +22,12 @@ public class GameForDetailDTO
     }
 
     public int Id { get; set; }
-    public string Name { get; set; }
-    public string Sport { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Sport { get; set; } = string.Empty;
     public DateTime Date { get; set; }
 
     [StringLength(100, MinimumLength = 6, ErrorMessage = "Place must have more than 5 characters.")] 
-    public string Place { get; set; }
+    public string Place { get; set; } = string.Empty;
     public string? Description { get; set; }
     public int NumberOfTeams { get; set; }
 

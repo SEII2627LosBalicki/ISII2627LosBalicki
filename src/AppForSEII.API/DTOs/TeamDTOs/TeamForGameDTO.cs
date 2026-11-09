@@ -23,7 +23,7 @@ public class TeamForGameDTO
     public int Id { get; set; }
 
         [StringLength(9, MinimumLength = 4)]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
         public string? CaptainName { get; set; }
         public string? CaptainSurname { get; set; }
         public int NumberOfMembers { get; set; }
@@ -33,7 +33,7 @@ public class TeamForGameDTO
 
         [Range(3, 100)]
         public int MaxAge { get; set; }
-        public string Sport { get; set; }
+        public string Sport { get; set; } = string.Empty;
         
 
     public override bool Equals(object? obj)

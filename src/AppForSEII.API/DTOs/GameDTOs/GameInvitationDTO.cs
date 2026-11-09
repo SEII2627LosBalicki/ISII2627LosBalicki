@@ -17,7 +17,7 @@ public class GameInvitationDTO
     public int TeamId { get; set; }
 
     [Required]
-    [StringLength(100, MinimumLength = 10, ErrorMessage = "Message must have more than 10 characters.")]
+    [StringLength(100, MinimumLength = 11, ErrorMessage = "Message must have more than 10 characters.")]
     public string Message { get; set; } = string.Empty;
 
     public override bool Equals(object? obj)

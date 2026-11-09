@@ -24,7 +24,7 @@ public class TeamForGameDetailDTO
     public int Id { get; set; }
 
         [StringLength(9, MinimumLength = 4)]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
         public string? CaptainName { get; set; }
         public string? CaptainSurname { get; set; }
         public int NumberOfMembers { get; set; }
@@ -34,10 +34,10 @@ public class TeamForGameDetailDTO
 
         [Range(3, 100)]
         public int MaxAge { get; set; }
-        public string Sport { get; set; }
+        public string Sport { get; set; } = string.Empty;
 
-        [StringLength(100, MinimumLength = 10, ErrorMessage = "Message must have more than 10 characters.")]
-        public string Message {get; set;}
+        [StringLength(100, MinimumLength = 11, ErrorMessage = "Message must have more than 10 characters.")]
+        public string Message {get; set;} = string.Empty;
 
     public override bool Equals(object? obj)
     {

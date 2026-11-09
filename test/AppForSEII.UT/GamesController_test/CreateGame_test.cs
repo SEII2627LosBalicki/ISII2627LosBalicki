@@ -44,10 +44,15 @@ public class CreateGame_test : AppForSEII4SqliteUT
         var teamWildcats = new Team(0, _teamWildcats, null, 20, 18, 40, football, userTroy);
         var teamPierogiss = new Team(0, _teamPierogiss, null, 20, 18, 40, football, userBalicki);
         var teamKirks = new Team(0, _teamKirks, null, 15, 18, 40, padel, userTroy);
+
+        var memberInvitation = new TeamInvitation(userCigala, teamWildcats, "Welcome to Wildcats", true);
+        teamWildcats.TeamInvitations.Add(memberInvitation);
+
         _context.Teams.AddRange(teamWildcats, teamPierogiss, teamKirks);
+        _context.TeamInvitations.Add(memberInvitation);
 
         // Existing Game (to test the error of creating a game with the same name)
-        var existingGame = new Game(0, _existingGameName, new DateTime(2026, 12, 1, 18, 0, 0), _gamePlace, _gameDescription, football, userTroy);
+        var existingGame = new Game(0, _existingGameName, DateTime.Today.AddDays(10), _gamePlace, _gameDescription, football, userTroy);
         _context.Games.Add(existingGame);
 
         _context.SaveChanges(); // Save changes to generate IDs for the entities        
@@ -55,7 +60,7 @@ public class CreateGame_test : AppForSEII4SqliteUT
 
     public static IEnumerable<object[]> TestCasesFor_CreateGame_Error()
     {
-        var futureDate = new DateTime(2026, 12, 1, 18, 0, 0);
+        var futureDate = DateTime.Today.AddDays(10); // A date in the future for valid game creation
 
         var validInvitations = new List<GameInvitationDTO>
         {
@@ -158,7 +163,7 @@ public class CreateGame_test : AppForSEII4SqliteUT
             ILogger<GamesController> logger = mock.Object;
             var controller = new GamesController(logger, _context);
 
-            var futureDate = new DateTime(2026, 12, 1, 18, 0, 0);
+            var futureDate = DateTime.Today.AddDays(10); // A date in the future for valid game creation
 
             var invitations = new List<GameInvitationDTO>
             {
@@ -170,7 +175,7 @@ public class CreateGame_test : AppForSEII4SqliteUT
 
             var expectedTeamDetails = new List<TeamForGameDetailDTO>
             {
-                new TeamForGameDetailDTO(1, _teamWildcats, "Troy", "Bolton", 0, 18, 40, _sportFootball, _invitationMessage),
+                new TeamForGameDetailDTO(1, _teamWildcats, "Troy", "Bolton", 1, 18, 40, _sportFootball, _invitationMessage),
                 new TeamForGameDetailDTO(2, _teamPierogiss, "Krzystof", "Balicki", 0, 18, 40, _sportFootball, _invitationMessage)
             };
 
