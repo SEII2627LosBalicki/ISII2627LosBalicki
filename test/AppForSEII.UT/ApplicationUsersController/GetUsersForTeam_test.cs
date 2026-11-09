@@ -82,14 +82,14 @@ public class GetUsersForTeam_test : AppForSEII4SqliteUT
         //Matriz con todas las filas: {sportName, minAge, maxAge, listaEsperada}
         return new List<object?[]>
         {
-            new object?[] {null, null, null, todos},
-            new object?[] {"Football", null, null, football},
-            new object?[] {null, 25, null, noKryzstof},
-            new object?[] {null, null, 35, kryzstofEIsi},
-            new object?[] {null, 25, 35, soloIsi},
-            new object?[] {"Football", 25, null, soloIsi},
-            new object?[] {"Chess", null, 25, ninguno},
-            new object?[] {"Chess", 35, 45, soloCarlos}
+            new object?[] {null, null, null, todos, null},
+            new object?[] {"Football", null, null, football, null},
+            new object?[] {null, 25, null, noKryzstof, null},
+            new object?[] {null, null, 35, kryzstofEIsi, null},
+            new object?[] {null, 25, 35, soloIsi, null},
+            new object?[] {"Football", 25, null, soloIsi, null},
+            new object?[] {"Chess", null, 25, ninguno, null},
+            new object?[] {"Chess", 35, 45, soloCarlos, null}
         };
     }
 
@@ -98,7 +98,7 @@ public class GetUsersForTeam_test : AppForSEII4SqliteUT
     [MemberData(nameof(TestCasesFor_GetUsersForTeam_OK))]
     [Trait("Database", "WithoutFixture")]
     [Trait("LevelTesting", "Unit Testing")]
-    public async Task GetUsersForTeam_OK_test(string? sportName, int? minAge, int? maxAge, IList<UserForTeamDTO> expectedUsers)
+    public async Task GetUsersForTeam_OK_test(string? sportName, int? minAge, int? maxAge, IList<UserForTeamDTO> expectedUsers, string? surname)
     {
         // Arrange
         var mock = new Mock<ILogger<ApplicationUsersController>>();
@@ -106,7 +106,7 @@ public class GetUsersForTeam_test : AppForSEII4SqliteUT
         var controller = new ApplicationUsersController(_context, logger);
 
         // Act
-        var result = await controller.GetUsersForTeam(sportName, minAge, maxAge);
+        var result = await controller.GetUsersForTeam(sportName, minAge, maxAge, surname);
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);

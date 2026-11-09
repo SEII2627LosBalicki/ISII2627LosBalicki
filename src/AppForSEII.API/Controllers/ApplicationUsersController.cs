@@ -66,7 +66,7 @@ namespace AppForSEII.API.Controllers
         [HttpGet]
         [Route("[action]")]
         [ProducesResponseType(typeof(IList<UserForTeamDTO>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult> GetUsersForTeam(string? sportName, int? minAge, int? maxAge)
+        public async Task<ActionResult> GetUsersForTeam(string? sportName, int? minAge, int? maxAge, string? surname)
         {
             DateOnly today = DateOnly.FromDateTime(DateTime.Today);
             DateOnly? maxBirthDate = minAge.HasValue ? today.AddYears(-minAge.Value) : null;
@@ -77,7 +77,8 @@ namespace AppForSEII.API.Controllers
                     .ThenInclude(i => i.Sport)
                 .Where(u => (maxBirthDate == null || u.BirthDate <= maxBirthDate.Value)
                         && (minBirthDate == null || u.BirthDate > minBirthDate.Value)
-                        && (sportName == null || u.UserInterested.Any(i => i.Sport.Name == sportName)))
+                        && (sportName == null || u.UserInterested.Any(i => i.Sport.Name == sportName)) 
+                        && (surname == null || u.Surname.Contains(surname)))
                 .OrderBy(u => u.Surname)
                     .ThenBy(u => u.Name)
                 .Select(u => new UserForTeamDTO(
