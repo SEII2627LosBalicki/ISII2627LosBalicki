@@ -103,14 +103,6 @@ public sealed class TeamsController : ControllerBase
             return BadRequest("Name can not be repeated");
         }
 
-        //Sprint 2 Eval.
-        var InvitedPlayers = new List<(ApplicationUser User, string Message)>();
-        
-        if (InvitedPlayers.Any(i => i.User.Age < teamForCreateDTO.MinAge))
-        {
-            _logger.LogError($"{DateTime.Now} Exception: Invited player age is invalid");
-            return BadRequest("Error! One of the players is younger than the minimum required age");
-        }
         
         //Step 5
         var sport = await _context.Sports.FirstOrDefaultAsync(s => s.Name == teamForCreateDTO.SportName);
@@ -165,6 +157,14 @@ public sealed class TeamsController : ControllerBase
                 return NotFound($"There is no user with Id {invitation.Id}");
             }
 
+             //Sprint 2 Eval.
+            if (user.Age < teamForCreateDTO.MinAge)
+            {
+                _logger.LogError($"{DateTime.Now} Exception: Invited player age is invalid");
+                return BadRequest("Error! One of the players is younger than the minimum required age");
+            }
+
+
             invitedUsers.Add((user, invitation.InvitationMessage));
         }
 
@@ -174,6 +174,8 @@ public sealed class TeamsController : ControllerBase
             _logger.LogError($"{DateTime.Now} Exception: Too many members");
             return BadRequest($"Captain plus invited players exceed MaxMembers ({teamForCreateDTO.MaxMembers})");
         }
+
+
 
         //Step 6
         var team = new Team(0, teamForCreateDTO.Name, teamForCreateDTO.Description, teamForCreateDTO.MaxMembers,
