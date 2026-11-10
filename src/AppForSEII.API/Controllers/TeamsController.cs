@@ -102,6 +102,12 @@ public sealed class TeamsController : ControllerBase
             return BadRequest("minAge can't be greater than maxAge");
         }
 
+        if (teamForCreateDTO.Name != null && !teamForCreateDTO.Name.StartsWith("FC"))
+        {
+            _logger.LogError($"{DateTime.Now} Exception: Invalid Team name");
+            return BadRequest("¡Error!, el nombre del equipo debe empezar por FC");
+        }
+
         //Alternative flow 5
         if (await _context.Teams.AnyAsync(t => t.Name == teamForCreateDTO.Name))
         {

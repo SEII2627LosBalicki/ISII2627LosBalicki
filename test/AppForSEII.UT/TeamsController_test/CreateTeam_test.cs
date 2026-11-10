@@ -33,7 +33,7 @@ public class CreateTeam_test : AppForSEII4SqliteUT
 
         var teams = new List<Team>()
         {
-            new Team(0, "Kirks", null, 20, 18, 40, sports[0], users[2]),
+            new Team(0, "FC Kirks", null, 20, 18, 40, sports[0], users[2]),
         };
 
         _context.AddRange(sports);
@@ -87,6 +87,50 @@ public class CreateTeam_test : AppForSEII4SqliteUT
     [Fact]
     [Trait("Database", "WithoutFixture")]
     [Trait("LevelTesting", "Unit Testing")]
+    public async Task CreateTeam_NameNotStartingWithFC_test()
+    {
+        //Arrange
+        var mock = new Mock<ILogger<TeamsController>>();
+        ILogger<TeamsController> logger = mock.Object;
+        var controller = new TeamsController(logger, _context);
+
+        var dto = new TeamForCreateDTO {Name = "holaclub"};
+        //Act
+        var result = await controller.CreateTeam(dto);
+
+        //Assert
+        var badResult = Assert.IsType<BadRequestObjectResult>(result);
+        Assert.Equal("¡Error!, el nombre del equipo debe empezar por FC", badResult.Value);
+
+    }
+
+
+
+    [Fact]
+    [Trait("Database", "WithoutFixture")]
+    [Trait("LevelTesting", "Unit Testing")]
+    public async Task CreateTeam_NameNull_test()
+    {
+        //Arrange
+        var mock = new Mock<ILogger<TeamsController>>();
+        ILogger<TeamsController> logger = mock.Object;
+        var controller = new TeamsController(logger, _context);
+
+        var dto = new TeamForCreateDTO { Name = null, MinAge = 5, MaxAge = 25 };
+        //Act
+        var result = await controller.CreateTeam(dto);
+
+        //Assert
+        var notFound = Assert.IsType<NotFoundObjectResult>(result);
+        Assert.Equal("There is no sport with this name", notFound.Value);
+    }
+
+
+
+
+    [Fact]
+    [Trait("Database", "WithoutFixture")]
+    [Trait("LevelTesting", "Unit Testing")]
     public async Task CreateTeam_RepeatedTeamName_test()
     {
         //Arrange
@@ -94,7 +138,7 @@ public class CreateTeam_test : AppForSEII4SqliteUT
         ILogger<TeamsController> logger = mock.Object;
         var controller = new TeamsController(logger, _context);
 
-        var dto = new TeamForCreateDTO {Name = "Kirks"};
+        var dto = new TeamForCreateDTO {Name = "FC Kirks"};
         //Act
         var result = await controller.CreateTeam(dto);
 
@@ -115,7 +159,7 @@ public class CreateTeam_test : AppForSEII4SqliteUT
         ILogger<TeamsController> logger = mock.Object;
         var controller = new TeamsController(logger, _context);
 
-        var dto = new TeamForCreateDTO { Name = "Nuevo", SportName = "sdbvdsojkbve"};
+        var dto = new TeamForCreateDTO { Name = "FC Nuevo", SportName = "sdbvdsojkbve"};
         //Act
         var result = await controller.CreateTeam(dto);
 
@@ -136,7 +180,7 @@ public class CreateTeam_test : AppForSEII4SqliteUT
         ILogger<TeamsController> logger = mock.Object;
         var controller = new TeamsController(logger, _context);
 
-        var dto = new TeamForCreateDTO {SportName = "Football", CaptainId = "99"};
+        var dto = new TeamForCreateDTO {Name = "FC Nuevo1", SportName = "Football", CaptainId = "99"};
         //Act
         var result = await controller.CreateTeam(dto);
 
@@ -157,7 +201,7 @@ public class CreateTeam_test : AppForSEII4SqliteUT
         ILogger<TeamsController> logger = mock.Object;
         var controller = new TeamsController(logger, _context);
 
-        var dto = new TeamForCreateDTO {SportName = "Football", CaptainId = "0"};
+        var dto = new TeamForCreateDTO {Name = "FC Nuevo2", SportName = "Football", CaptainId = "0"};
         //Act
         var result = await controller.CreateTeam(dto);
 
@@ -177,7 +221,7 @@ public class CreateTeam_test : AppForSEII4SqliteUT
         ILogger<TeamsController> logger = mock.Object;
         var controller = new TeamsController(logger, _context);
 
-        var dto = new TeamForCreateDTO {SportName = "Football", CaptainId = "0", InvitedPlayers = new List<TeamInvitationDTO> 
+        var dto = new TeamForCreateDTO {Name = "FC Nuevo3", SportName = "Football", CaptainId = "0", InvitedPlayers = new List<TeamInvitationDTO> 
             {
                 new TeamInvitationDTO {Id = "0", InvitationMessage = "Hola"}
             }
@@ -203,7 +247,7 @@ public class CreateTeam_test : AppForSEII4SqliteUT
         ILogger<TeamsController> logger = mock.Object;
         var controller = new TeamsController(logger, _context);
 
-        var dto = new TeamForCreateDTO {SportName = "Football", CaptainId = "0", InvitedPlayers = new List<TeamInvitationDTO> 
+        var dto = new TeamForCreateDTO {Name = "FC Nuevo4", SportName = "Football", CaptainId = "0", InvitedPlayers = new List<TeamInvitationDTO> 
             {
                 new TeamInvitationDTO {Id = "1", InvitationMessage = "Hola"},
                 new TeamInvitationDTO {Id = "1", InvitationMessage = "Hola"}
@@ -229,7 +273,7 @@ public class CreateTeam_test : AppForSEII4SqliteUT
         ILogger<TeamsController> logger = mock.Object;
         var controller = new TeamsController(logger, _context);
 
-        var dto = new TeamForCreateDTO {SportName = "Football", CaptainId = "0", InvitedPlayers = new List<TeamInvitationDTO> 
+        var dto = new TeamForCreateDTO {Name = "FC Nuevo5", SportName = "Football", CaptainId = "0", InvitedPlayers = new List<TeamInvitationDTO> 
             {
                 new TeamInvitationDTO {Id = "199", InvitationMessage = "Hola"}
             }
@@ -253,7 +297,7 @@ public class CreateTeam_test : AppForSEII4SqliteUT
         ILogger<TeamsController> logger = mock.Object;
         var controller = new TeamsController(logger, _context);
 
-        var dto = new TeamForCreateDTO {SportName = "Football", CaptainId = "0", MaxMembers = 1, InvitedPlayers = new List<TeamInvitationDTO> 
+        var dto = new TeamForCreateDTO {Name = "FC Nuevo6", SportName = "Football", CaptainId = "0", MaxMembers = 1, InvitedPlayers = new List<TeamInvitationDTO> 
             {
                 new TeamInvitationDTO {Id = "3", InvitationMessage = "Hola"}
             }
@@ -278,7 +322,7 @@ public class CreateTeam_test : AppForSEII4SqliteUT
         ILogger<TeamsController> logger = mock.Object;
         var controller = new TeamsController(logger, _context);
 
-        var dto = new TeamForCreateDTO {Name = "Vodka Juniors", SportName = "Football", CaptainId = "0", MaxMembers = 10, InvitedPlayers = new List<TeamInvitationDTO> 
+        var dto = new TeamForCreateDTO {Name = "FC Vodka Juniors", SportName = "Football", CaptainId = "0", MaxMembers = 10, InvitedPlayers = new List<TeamInvitationDTO> 
             {
                 new TeamInvitationDTO {Id = "3", InvitationMessage = "Hola"}
             }
@@ -293,7 +337,7 @@ public class CreateTeam_test : AppForSEII4SqliteUT
         var captain = _context.ApplicationUsers.Find("0")!;
         var invited = _context.ApplicationUsers.Find("3")!;
 
-        var expected = new TeamDetailDTO(2, "Vodka Juniors", "Kryzstof", "Balicki", "Football", 3, 3, captain.Age,
+        var expected = new TeamDetailDTO(2, "FC Vodka Juniors", "Kryzstof", "Balicki", "Football", 3, 3, captain.Age,
             new List<TeamInvitationDTO>
             {
                 new TeamInvitationDTO("Ana", "López", "3", invited.Age, "Hola")
@@ -319,7 +363,7 @@ public class CreateTeam_test : AppForSEII4SqliteUT
 
         var dto = new TeamForCreateDTO
         {
-            Name = "Ajedrez",
+            Name = "FC Ajedrez",
             SportName = "Chess",
             CaptainId = "0",
             MaxMembers = 5,
@@ -335,7 +379,7 @@ public class CreateTeam_test : AppForSEII4SqliteUT
 
         var captain = _context.ApplicationUsers.Find("0")!;
 
-        var expected = new TeamDetailDTO(2, "Ajedrez", "Kryzstof", "Balicki", "Chess", 3, 3, captain.Age,
+        var expected = new TeamDetailDTO(2, "FC Ajedrez", "Kryzstof", "Balicki", "Chess", 3, 3, captain.Age,
             new List<TeamInvitationDTO>());
 
         Assert.Equal(expected, actual);
@@ -356,7 +400,7 @@ public class CreateTeam_test : AppForSEII4SqliteUT
 
         var dto = new TeamForCreateDTO
         {
-            Name = "Los Tres",
+            Name = "FC Los Tres",
             SportName = "Football",
             CaptainId = "0",
             MaxMembers = 10,
@@ -378,7 +422,7 @@ public class CreateTeam_test : AppForSEII4SqliteUT
         var invited1 = _context.ApplicationUsers.Find("1")!;
         var invited3 = _context.ApplicationUsers.Find("3")!;
 
-        var expected = new TeamDetailDTO(2, "Los Tres", "Kryzstof", "Balicki", "Football", 3, 3, captain.Age,
+        var expected = new TeamDetailDTO(2, "FC Los Tres", "Kryzstof", "Balicki", "Football", 3, 3, captain.Age,
             new List<TeamInvitationDTO>
             {
                 new TeamInvitationDTO("Isi", "Palazón", "1", invited1.Age, "Hola"),
