@@ -89,7 +89,7 @@ public class GetUsersForTeam_test : AppForSEII4SqliteUT
             new object?[] {null, 25, 35, soloIsi, null},
             new object?[] {"Football", 25, null, soloIsi, null},
             new object?[] {"Chess", null, 25, ninguno, null},
-            new object?[] {"Chess", 35, 45, soloCarlos, null}
+            new object?[] {"Chess", 35, 45, soloCarlos, null},
             new object?[] {null, null, null, soloCarlos, "Kir"},
             new object?[] {null, null, null, ninguno, "xyz"}
         };
