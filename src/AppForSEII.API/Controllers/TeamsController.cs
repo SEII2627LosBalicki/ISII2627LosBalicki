@@ -102,6 +102,15 @@ public sealed class TeamsController : ControllerBase
             _logger.LogError($"{DateTime.Now} Exception: Can't have the same name repeated");
             return BadRequest("Name can not be repeated");
         }
+
+        //Sprint 2 Eval.
+        var InvitedPlayers = new List<(ApplicationUser User, string Message)>();
+        
+        if (InvitedPlayers.Any(i => i.User.Age < teamForCreateDTO.MinAge))
+        {
+            _logger.LogError($"{DateTime.Now} Exception: Invited player age is invalid");
+            return BadRequest("Error! One of the players is younger than the minimum required age");
+        }
         
         //Step 5
         var sport = await _context.Sports.FirstOrDefaultAsync(s => s.Name == teamForCreateDTO.SportName);
