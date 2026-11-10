@@ -45,10 +45,12 @@ public class CreateGame_test : AppForSEII4SqliteUT
         var teamPierogiss = new Team(0, _teamPierogiss, null, 20, 18, 40, football, userBalicki);
         var teamKirks = new Team(0, _teamKirks, null, 15, 18, 40, padel, userTroy);
 
+        var teamMinAgeLess3 = new Team(0, "MinAgers", null, 20, 2, 40, football, userBalicki);
+
         var memberInvitation = new TeamInvitation(userCigala, teamWildcats, "Welcome to Wildcats", true);
         teamWildcats.TeamInvitations.Add(memberInvitation);
 
-        _context.Teams.AddRange(teamWildcats, teamPierogiss, teamKirks);
+        _context.Teams.AddRange(teamWildcats, teamPierogiss, teamKirks, teamMinAgeLess3);
         _context.TeamInvitations.Add(memberInvitation);
 
         // Existing Game (to test the error of creating a game with the same name)
@@ -113,6 +115,15 @@ public class CreateGame_test : AppForSEII4SqliteUT
         // 9. User is not the captain of any invited team (El Cigala is not a captain of any team)
         var gameUserNotCaptain = new GameForCreateDTO("Game User Not Captain", futureDate, _gamePlace, _gameDescription, _sportFootball, _userCigala, validInvitations);
 
+        // EXAM - UC CreateGame
+        var minAgeInvitation = new List<GameInvitationDTO>
+        {
+            new GameInvitationDTO(1, _invitationMessage), // Wildcats (Football)
+            new GameInvitationDTO(4, _invitationMessage)  // MinAgers(created team with MinAge < 3)
+        };
+
+        var gameTeamMinAgeLower3 = new GameForCreateDTO("Game Team with MinAge < 3", futureDate, _gamePlace, _gameDescription, _sportFootball, _userTroy, minAgeInvitation);
+
         var allTests = new List<object[]>
         {
             new object[] {gameDateInPast, "Error! Your game date is in the past."},
@@ -123,7 +134,8 @@ public class CreateGame_test : AppForSEII4SqliteUT
             new object[] {gameDuplicateTeamInvitations, "Error! A team cannot be invited more than once."},
             new object[] {gameTeamNotFound, "Error! Team with ID 99 does not exist."},
             new object[] {gameTeamWrongSport, "Error! Team 'Kirks' does not play the sport 'Football'."},
-            new object[] {gameUserNotCaptain, "Error! User is not the captain of any invited team."}
+            new object[] {gameUserNotCaptain, "Error! User is not the captain of any invited team."},
+            new object[] {gameTeamMinAgeLower3, "Error! One of the Teams has a MinAge lower than 3"}
         };
 
         return allTests;

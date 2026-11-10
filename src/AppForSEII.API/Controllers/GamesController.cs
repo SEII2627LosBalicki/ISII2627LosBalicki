@@ -87,6 +87,7 @@ public sealed class GamesController : ControllerBase
             ModelState.AddModelError("SportName", "Error! Sport does not exist.");
         }
 
+        
         if(ModelState.ErrorCount > 0)
         {
             return BadRequest(new ValidationProblemDetails(ModelState));
@@ -123,6 +124,8 @@ public sealed class GamesController : ControllerBase
             {
                 ModelState.AddModelError("GameInvitations", $"Error! Team '{team.Name}' does not play the sport '{sport!.Name}'.");                
             }            
+
+            
         }
 
         // Alternative Flow 4: If the user is not the captain of at least one of the selected teams, the system shows an error message because 
@@ -130,6 +133,29 @@ public sealed class GamesController : ControllerBase
         if(!teams.Any(t => t.CaptainId == user!.Id)) // We can use the null-forgiving operator (!) here because we have already checked that the user is not null
         {
             ModelState.AddModelError("ResponsibleUserName", "Error! User is not the captain of any invited team.");
+        }
+
+        // EXAM MODIFICATION - UC CreateGame        
+        var teamsExam = await _context.Teams
+            .Include(t => t.Captain)
+            .Include(t => t.Sport)
+            .Include(t => t.TeamInvitations)
+
+            .Where(t => teamIDs.Contains(t.Id))
+            .ToListAsync();
+
+        foreach (var invitation in gameForCreate.GameInvitations)
+        {
+            var team = teamsExam.FirstOrDefault(t => t.Id == invitation.TeamId);           
+
+            if(team == null)
+            {
+                ModelState.AddModelError("GameInvitations", $"Error! Team with ID {invitation.TeamId} does not exist.");                
+            }
+            else if(team.MinAge < 3)
+            {
+                ModelState.AddModelError("Min Age", "Error! One of the Teams has a MinAge lower than 3");
+            }                     
         }
 
         if(ModelState.ErrorCount > 0)
