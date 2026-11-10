@@ -243,6 +243,57 @@ public class CreateTeam_test : AppForSEII4SqliteUT
 
     }
 
+        [Fact]
+    [Trait("Database", "WithoutFixture")]
+    [Trait("LevelTesting", "Unit Testing")]
+    public async Task CreateTeam_AgeLowerThanMinAge_test()
+    {
+        //Arrange
+        var mock = new Mock<ILogger<TeamsController>>();
+        ILogger<TeamsController> logger = mock.Object;
+        var controller = new TeamsController(logger, _context);
+
+        var dto = new TeamForCreateDTO {SportName = "Football", MinAge = 40, MaxAge = 100, CaptainId = "0", InvitedPlayers = new List<TeamInvitationDTO> 
+            {
+                new TeamInvitationDTO {Id = "3", InvitationMessage = "Hola"},
+            }
+        };
+        //Act
+        var result = await controller.CreateTeam(dto);
+
+        //Assert
+        var badRequest = Assert.IsType<BadRequestObjectResult>(result);
+        Assert.Equal("Error! One of the players is younger than the minimum required age", badRequest.Value);
+
+    }
+
+    [Fact]
+    [Trait("Database", "WithoutFixture")]
+    [Trait("LevelTesting", "Unit Testing")]
+    public async Task CreateTeam_OneInvitedAgeLowerThanMinAge_test()
+    {
+        //Arrange
+        var mock = new Mock<ILogger<TeamsController>>();
+        ILogger<TeamsController> logger = mock.Object;
+        var controller = new TeamsController(logger, _context);
+
+        var isi = _context.ApplicationUsers.Find("1")!;
+
+        var dto = new TeamForCreateDTO {SportName = "Football", MinAge = isi.Age, MaxAge = 100, CaptainId = "0", InvitedPlayers = new List<TeamInvitationDTO> 
+            {
+                new TeamInvitationDTO {Id = "1", InvitationMessage = "Hola"},
+                new TeamInvitationDTO {Id = "3", InvitationMessage = "Hola"},
+            }
+        };
+        //Act
+        var result = await controller.CreateTeam(dto);
+
+        //Assert
+        var badRequest = Assert.IsType<BadRequestObjectResult>(result);
+        Assert.Equal("Error! One of the players is younger than the minimum required age", badRequest.Value);
+
+    }
+
     [Fact]
     [Trait("Database", "WithoutFixture")]
     [Trait("LevelTesting", "Unit Testing")]
@@ -266,6 +317,7 @@ public class CreateTeam_test : AppForSEII4SqliteUT
         Assert.Equal("Captain plus invited players exceed MaxMembers (1)", badRequest.Value);
 
     }
+
 
 
     [Fact]
@@ -390,7 +442,5 @@ public class CreateTeam_test : AppForSEII4SqliteUT
         Assert.Equal(2, _context.Teams.Count());
         Assert.Equal(2, _context.TeamInvitations.Count());
     }
-
-
     
 }
