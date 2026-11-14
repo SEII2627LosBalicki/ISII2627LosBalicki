@@ -97,9 +97,9 @@ public sealed class GamesController : ControllerBase
 
         // We need to check if the same team is invited more than once. We count the number of distinct team IDs and compare it with 
         // the total number of team IDs. If they are not equal, it means that at least one team has been invited more than once.
-        var teamIDs = gameForCreate.GameInvitations.Select(gi => gi.TeamId).ToList(); // Get all the team IDs from the game invitations
+        var Ids = gameForCreate.GameInvitations.Select(gi => gi.Id).ToList(); // Get all the team IDs from the game invitations
 
-        if(teamIDs.Distinct().Count() != teamIDs.Count())
+        if(Ids.Distinct().Count() != Ids.Count())
         {
             ModelState.AddModelError("GameInvitations", "Error! A team cannot be invited more than once.");
         }
@@ -110,15 +110,15 @@ public sealed class GamesController : ControllerBase
             .Include(t => t.Sport)
             .Include(t => t.TeamInvitations)
 
-            .Where(t => teamIDs.Contains(t.Id))
+            .Where(t => Ids.Contains(t.Id))
             .ToListAsync();
 
         foreach (var invitation in gameForCreate.GameInvitations)
         {
-            var team = teams.FirstOrDefault(t => t.Id == invitation.TeamId);
+            var team = teams.FirstOrDefault(t => t.Id == invitation.Id);
             if(team == null)
             {
-                ModelState.AddModelError("GameInvitations", $"Error! Team with ID {invitation.TeamId} does not exist.");                
+                ModelState.AddModelError("GameInvitations", $"Error! Team with ID {invitation.Id} does not exist.");                
             }
             else if(team.SportId != sport!.Id)
             {
@@ -141,16 +141,16 @@ public sealed class GamesController : ControllerBase
             .Include(t => t.Sport)
             .Include(t => t.TeamInvitations)
 
-            .Where(t => teamIDs.Contains(t.Id))
+            .Where(t => Ids.Contains(t.Id))
             .ToListAsync();
 
         foreach (var invitation in gameForCreate.GameInvitations)
         {
-            var team = teamsExam.FirstOrDefault(t => t.Id == invitation.TeamId);           
+            var team = teamsExam.FirstOrDefault(t => t.Id == invitation.Id);           
 
             if(team == null)
             {
-                ModelState.AddModelError("GameInvitations", $"Error! Team with ID {invitation.TeamId} does not exist.");                
+                ModelState.AddModelError("GameInvitations", $"Error! Team with ID {invitation.Id} does not exist.");                
             }
             else if(team.MinAge < 3)
             {
@@ -174,7 +174,7 @@ public sealed class GamesController : ControllerBase
         // Add GameInvitations to the game entity
         foreach(var item in gameForCreate.GameInvitations)
         {
-            game.GameInvitations.Add(new GameInvitation(item.TeamId, game.Id, item.Message)
+            game.GameInvitations.Add(new GameInvitation(item.Id, game.Id, item.Message)
             {
                 AcceptedGame = false // POST-CONDITION: Mark the invitation as not "pending" by default 
             });
@@ -199,7 +199,7 @@ public sealed class GamesController : ControllerBase
         // Create a list of TeamForGameDetailDTO objects to include in the response
         var teamsDetail = gameForCreate.GameInvitations.Select(gi =>
         {
-            var team = teams.First(t => t.Id == gi.TeamId);
+            var team = teams.First(t => t.Id == gi.Id);
             return new TeamForGameDetailDTO(
                 team.Id,
                 team.Name,
