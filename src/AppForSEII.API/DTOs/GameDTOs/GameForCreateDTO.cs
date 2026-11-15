@@ -1,3 +1,5 @@
+using AppForSEII.API.DTOs.TeamDTOs;
+
 namespace AppForSEII.API.DTOs.GameDTOs;
 
 public class GameForCreateDTO
@@ -7,7 +9,7 @@ public class GameForCreateDTO
         
     }
 
-    public GameForCreateDTO(string name, DateTime date, string place, string? description, string sportName, string responsibleUserName, IList<GameInvitationDTO> gameInvitations)
+    public GameForCreateDTO(string name, DateTime date, string place, string? description, string sportName, string responsibleUserName, IList<TeamForGameDetailDTO> gameInvitations)
     {
         Name = name ?? throw new ArgumentNullException(nameof(name));
         Date = date;
@@ -34,7 +36,7 @@ public class GameForCreateDTO
     [EmailAddress]
     [Required(AllowEmptyStrings = false, ErrorMessage = "Please, set the responsible user email")]
     public string ResponsibleUserName { get; set; } = string.Empty;
-    public IList<GameInvitationDTO> GameInvitations { get; set; } = new List<GameInvitationDTO>();
+    public IList<TeamForGameDetailDTO> GameInvitations { get; set; } = new List<TeamForGameDetailDTO>();
 
     protected bool CompareDate(DateTime date1, DateTime date2)
     {
