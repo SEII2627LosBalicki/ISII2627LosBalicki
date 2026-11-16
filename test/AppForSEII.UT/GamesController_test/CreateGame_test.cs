@@ -64,10 +64,10 @@ public class CreateGame_test : AppForSEII4SqliteUT
     {
         var futureDate = DateTime.Today.AddDays(10); // A date in the future for valid game creation
 
-        var validInvitations = new List<GameInvitationDTO>
+        var validInvitations = new List<TeamForGameDetailDTO>
         {
-            new GameInvitationDTO(1, _invitationMessage),
-            new GameInvitationDTO(2, _invitationMessage)
+            new TeamForGameDetailDTO(1, _teamWildcats, "Troy", "Bolton", 1, 18, 40, _sportFootball, _invitationMessage),
+            new TeamForGameDetailDTO(2, _teamPierogiss, "Krzystof", "Balicki", 0, 18, 40, _sportFootball, _invitationMessage)
         };
 
         // 1. Date in the past
@@ -77,7 +77,10 @@ public class CreateGame_test : AppForSEII4SqliteUT
         var gameDuplicateName = new GameForCreateDTO(_existingGameName, futureDate, _gamePlace, _gameDescription, _sportFootball, _userTroy, validInvitations);
 
         // 3. Less than 2 teams invited (Alternative flow 3)
-        var gameLessTwoTeams = new GameForCreateDTO("Game less than 2 teams", futureDate, _gamePlace, _gameDescription, _sportFootball, _userTroy, new List<GameInvitationDTO> {new GameInvitationDTO(1, _invitationMessage)});
+        var gameLessTwoTeams = new GameForCreateDTO("Game less than 2 teams", futureDate, _gamePlace, _gameDescription, _sportFootball, _userTroy, new List<TeamForGameDetailDTO> 
+        { 
+            new TeamForGameDetailDTO(1, _teamWildcats, "Troy", "Bolton", 1, 18, 40, _sportFootball, _invitationMessage) 
+        });
 
         // 4. Responsible user not registered (Post-condition)
         var gameUnregisteredUser = new GameForCreateDTO("Game Unregistered User", futureDate, _gamePlace, _gameDescription, _sportFootball, "unregistered@test.com", validInvitations);
@@ -86,28 +89,28 @@ public class CreateGame_test : AppForSEII4SqliteUT
         var gameSportNotFound = new GameForCreateDTO("Game Sport not found", futureDate, _gamePlace, _gameDescription, "Curling", _userTroy, validInvitations);
 
         // 6. Same team invited more than once (Complex validation)
-        var duplicateInvitations = new List<GameInvitationDTO>
+        var duplicateInvitations = new List<TeamForGameDetailDTO>
         {
-            new GameInvitationDTO(1, _invitationMessage),
-            new GameInvitationDTO(1, _invitationMessage)
+            new TeamForGameDetailDTO(1, _teamWildcats, "Troy", "Bolton", 1, 18, 40, _sportFootball, _invitationMessage),
+            new TeamForGameDetailDTO(1, _teamWildcats, "Troy", "Bolton", 1, 18, 40, _sportFootball, _invitationMessage)
         };
 
         var gameDuplicateTeamInvitations = new GameForCreateDTO("Game Duplicate Team", futureDate, _gamePlace, _gameDescription, _sportFootball, _userTroy, duplicateInvitations);
 
         // 7. Invited team does not exist (Complex validation)
-        var nonExistentTeamInvitations = new List<GameInvitationDTO>
+        var nonExistentTeamInvitations = new List<TeamForGameDetailDTO>
         {
-            new GameInvitationDTO(1, _invitationMessage), 
-            new GameInvitationDTO(99, _invitationMessage) // Team with ID 99 does not exist   
+            new TeamForGameDetailDTO(1, _teamWildcats, "Troy", "Bolton", 1, 18, 40, _sportFootball, _invitationMessage), 
+            new TeamForGameDetailDTO(99, "Unknown", null, null, 0, 18, 40, _sportFootball, _invitationMessage) // Team with ID 99 does not exist   
         };
 
         var gameTeamNotFound = new GameForCreateDTO ("Game Team Not Found", futureDate, _gamePlace, _gameDescription, _sportFootball, _userTroy, nonExistentTeamInvitations);
 
         // 8. Team does not play the sport of the game (Complex validation)
-        var wrongSportInvitation = new List<GameInvitationDTO>
+        var wrongSportInvitation = new List<TeamForGameDetailDTO>
         {
-            new GameInvitationDTO(1, _invitationMessage), // Wildcats (Football)
-            new GameInvitationDTO(3, _invitationMessage)  // Kirks (Padel)
+            new TeamForGameDetailDTO(1, _teamWildcats, "Troy", "Bolton", 1, 18, 40, _sportFootball, _invitationMessage), // Wildcats (Football)
+            new TeamForGameDetailDTO(3, _teamKirks, "Troy", "Bolton", 0, 18, 40, _sportPadel, _invitationMessage)       // Kirks (Padel)
         };
 
         var gameTeamWrongSport = new GameForCreateDTO("Game Wrong Sport", futureDate, _gamePlace, _gameDescription, _sportFootball, _userTroy, wrongSportInvitation);
@@ -116,10 +119,10 @@ public class CreateGame_test : AppForSEII4SqliteUT
         var gameUserNotCaptain = new GameForCreateDTO("Game User Not Captain", futureDate, _gamePlace, _gameDescription, _sportFootball, _userCigala, validInvitations);
 
         // EXAM - UC CreateGame
-        var minAgeInvitation = new List<GameInvitationDTO>
+        var minAgeInvitation = new List<TeamForGameDetailDTO>
         {
-            new GameInvitationDTO(1, _invitationMessage), // Wildcats (Football)
-            new GameInvitationDTO(4, _invitationMessage)  // MinAgers(created team with MinAge < 3)
+            new TeamForGameDetailDTO(1, _teamWildcats, "Troy", "Bolton", 1, 18, 40, _sportFootball, _invitationMessage), // Wildcats (Football)
+            new TeamForGameDetailDTO(4, "MinAgers", "Krzystof", "Balicki", 0, 2, 40, _sportFootball, _invitationMessage) // MinAgers (created team with MinAge < 3)
         };
 
         var gameTeamMinAgeLower3 = new GameForCreateDTO("Game Team with MinAge < 3", futureDate, _gamePlace, _gameDescription, _sportFootball, _userTroy, minAgeInvitation);
@@ -141,70 +144,64 @@ public class CreateGame_test : AppForSEII4SqliteUT
         return allTests;
     }
 
-        [Theory]
-        [Trait("LevelTesting", "Unit Testing")]
-        [Trait("Database", "WithoutFixture")]
-        [MemberData(nameof(TestCasesFor_CreateGame_Error))]
-        public async Task CreateGame_Error_Test(GameForCreateDTO gameDTO, string errorExpected)
+    [Theory]
+    [Trait("LevelTesting", "Unit Testing")]
+    [Trait("Database", "WithoutFixture")]
+    [MemberData(nameof(TestCasesFor_CreateGame_Error))]
+    public async Task CreateGame_Error_Test(GameForCreateDTO gameDTO, string errorExpected)
+    {
+        // Arrange
+        var mock = new Mock<ILogger<GamesController>>();
+        ILogger<GamesController> logger = mock.Object;
+        var controller = new GamesController(logger, _context);
+
+        // Act
+        var result = await controller.CreateGame(gameDTO);
+
+        // Assert
+        var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+        var problemDetails = Assert.IsType<ValidationProblemDetails>(badRequestResult.Value);
+
+        var errorActual = problemDetails.Errors.First().Value[0];
+
+        Assert.StartsWith(errorExpected, errorActual); // Check that the actual error message starts with the expected error message
+    }
+
+    [Fact]
+    [Trait("LevelTesting", "Unit Testing")]
+    [Trait("Database", "WithoutFixture")]
+    public async Task CreateGame_Success_Test()
+    {
+        // Arrange
+        var mock = new Mock<ILogger<GamesController>>();
+        ILogger<GamesController> logger = mock.Object;
+        var controller = new GamesController(logger, _context);
+
+        var futureDate = DateTime.Today.AddDays(10); // A date in the future for valid game creation
+
+        var invitations = new List<TeamForGameDetailDTO>
         {
-            // Arrange
-            var mock = new Mock<ILogger<GamesController>>();
-            ILogger<GamesController> logger = mock.Object;
-            var controller = new GamesController(logger, _context);
+            new TeamForGameDetailDTO(1, _teamWildcats, "Troy", "Bolton", 1, 18, 40, _sportFootball, _invitationMessage),
+            new TeamForGameDetailDTO(2, _teamPierogiss, "Krzystof", "Balicki", 0, 18, 40, _sportFootball, _invitationMessage)
+        };
 
-            // Act
-            var result = await controller.CreateGame(gameDTO);
+        var gameForCreateDTO = new GameForCreateDTO("Final championship", futureDate, _gamePlace, _gameDescription, _sportFootball, _userTroy, invitations);
 
-            // Assert
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-            var problemDetails = Assert.IsType<ValidationProblemDetails>(badRequestResult.Value);
-
-            var errorActual = problemDetails.Errors.First().Value[0];
-
-            Assert.StartsWith(errorExpected, errorActual); // Check that the actual error message starts with the expected error message
-
-        }
-
-        [Fact]
-        [Trait("LevelTesting", "Unit Testing")]
-        [Trait("Database", "WithoutFixture")]
-        public async Task CreateGame_Success_Test()
+        var expectedTeamDetails = new List<TeamForGameDetailDTO>
         {
-            // Arrange
-            var mock = new Mock<ILogger<GamesController>>();
-            ILogger<GamesController> logger = mock.Object;
-            var controller = new GamesController(logger, _context);
+            new TeamForGameDetailDTO(1, _teamWildcats, "Troy", "Bolton", 1, 18, 40, _sportFootball, _invitationMessage),
+            new TeamForGameDetailDTO(2, _teamPierogiss, "Krzystof", "Balicki", 0, 18, 40, _sportFootball, _invitationMessage)
+        };
 
-            var futureDate = DateTime.Today.AddDays(10); // A date in the future for valid game creation
+        var expectedGameDetailDTO = new GameForDetailDTO(2, "Final championship", _sportFootball, futureDate, _gamePlace, _gameDescription, 2, expectedTeamDetails);
 
-            var invitations = new List<GameInvitationDTO>
-            {
-                new GameInvitationDTO(1, _invitationMessage),
-                new GameInvitationDTO(2, _invitationMessage)
-            };
+        // Act
+        var result = await controller.CreateGame(gameForCreateDTO);
 
-            var gameForCreateDTO = new GameForCreateDTO("Final championship", futureDate, _gamePlace, _gameDescription, _sportFootball, _userTroy, invitations);
+        // Assert
+        var createdResult = Assert.IsType<CreatedAtActionResult>(result);
+        var actualGameDetailDTO = Assert.IsType<GameForDetailDTO>(createdResult.Value);
 
-            var expectedTeamDetails = new List<TeamForGameDetailDTO>
-            {
-                new TeamForGameDetailDTO(1, _teamWildcats, "Troy", "Bolton", 1, 18, 40, _sportFootball, _invitationMessage),
-                new TeamForGameDetailDTO(2, _teamPierogiss, "Krzystof", "Balicki", 0, 18, 40, _sportFootball, _invitationMessage)
-            };
-
-            var expectedGameDetailDTO = new GameForDetailDTO(2, "Final championship", _sportFootball, futureDate, _gamePlace, _gameDescription, 2, expectedTeamDetails);
-
-            // Act
-            var result = await controller.CreateGame(gameForCreateDTO);
-
-            // Assert
-            var createdResult = Assert.IsType<CreatedAtActionResult>(result);
-            var actualGameDetailDTO = Assert.IsType<GameForDetailDTO>(createdResult.Value);
-
-            Assert.Equal(expectedGameDetailDTO, actualGameDetailDTO); // Check that the actual game detail matches the expected game detail
-        }
-
-
-    
-
-
+        Assert.Equal(expectedGameDetailDTO, actualGameDetailDTO); // Check that the actual game detail matches the expected game detail
+    }
 }
