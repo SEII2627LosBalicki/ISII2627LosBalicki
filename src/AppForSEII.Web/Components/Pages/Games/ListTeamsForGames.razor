@@ -1,0 +1,126 @@
+@* 1. Directivas *@
+@page "/games/listteamsforgame"
+@using AppForSEII.Web.API
+@inject IAppForSEIIAPIClient apiservice
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+
+<div class="container mt-3">
+    @* 1. Header *@
+    <h3>Select Teams to Invite</h3>
+
+    @* 2. Filters *@
+    <div class="row my-3">
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="Filter by captain..." @bind="captainName" id="inputCaptain" />
+            
+            @* Sports Drop-down with Bootstrap form-select *@
+            <select class="form-select" @bind="sport" id="selectSport">
+                <option value="">All Sports</option>
+                <option value="Football">Football</option>
+                <option value="Padel">Padel</option>
+            </select>
+
+            <button class="btn btn-outline-primary" type="button" @onclick="SearchTeams" id="buttonSearch">Search</button>
+        </div>
+    </div>
+
+    @* 3. Main Content: Results (col-md-8) + Selected Teams (col-md-4) *@
+    <div class="row">
+        @* 3a. Results *@
+        <div class="col-md-8">
+            <h4>Available Teams</h4>
+
+            @if(teams == null)
+            {
+                <div class="alert alert-info" id="loadingMessage">
+                    Loading teams...
+                </div>
+            }
+            else if (!teams.Any())
+            {
+                    <div class="alert alert-warning" id="noTeamsMessage">
+                        No teams found matching your search criteria.
+                    </div>
+            }
+            else
+            {
+                <table class="table table-striped table-hover" id="TableOfTeams">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Captain</th>
+                        <th>Sport</th>
+                        <th>Members</th>
+                        <th>Ages</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (teams != null)
+                    {
+                        @foreach (var team in teams)
+                        {
+                            <tr>
+                                <td>@team.Name</td>
+                                <td>@team.CaptainName @team.CaptainSurname</td>
+                                <td>@team.Sport</td>
+                                <td>@team.NumberOfMembers</td>
+                                <td>@team.MinAge - @team.MaxAge</td>
+                                <td>
+                                    <button class="btn btn-sm btn-success" id="teamToInvite_@team.Name">
+                                        Invite
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+            }
+                        
+        </div>
+
+        @* 3b. Renting cart / Invited Teams *@
+        <div class="col-md-4">
+            <h4>Invited Teams</h4>
+            <div class="card p-3">
+                <p class="text-muted">Selected teams will appear here.</p>
+            </div>
+        </div>
+    </div>
+
+    @* 4. Actions *@
+    <div class="row mt-3">
+        <div class="col-12">
+            <button class="btn btn-primary" id="buttonCreateGame">
+                Create Game
+            </button>
+        </div>
+    </div>
+</div>
+
+@* 3. Lógica C# *@
+@code {
+    private string? captainName;
+    private string? sport;
+    private ICollection<TeamForGameDTO>? teams { get; set; } = new List<TeamForGameDTO>();
+
+    protected async void SearchTeams()
+    {
+        try
+        {
+            // If field is empty or null, set it to null to avoid sending empty strings to the API
+            var searchCaptain = string.IsNullOrWhiteSpace(captainName) ? null : captainName;
+            var searchSport = string.IsNullOrWhiteSpace(sport) ? null : sport;
+
+            // Call the API to get the list of teams based on the filters
+            teams = await apiservice.GetTeamsForGameAsync(searchCaptain, searchSport);
+        }
+        catch (ApiException ex)
+        {
+            teams = new List<TeamForGameDTO>();
+        }
+        StateHasChanged();
+    }
+}
