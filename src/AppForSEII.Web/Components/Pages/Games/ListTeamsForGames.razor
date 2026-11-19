@@ -2,6 +2,11 @@
 @page "/games/listteamsforgame"
 @using AppForSEII.Web.API
 @inject IAppForSEIIAPIClient apiservice
+
+@* Give access to the GameStateContainer class and injects the session instance in the variable GameState *@
+@using AppForSEII.Web
+@inject GameStateContainer GameState
+
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize]
 
@@ -68,7 +73,7 @@
                                 <td>@team.NumberOfMembers</td>
                                 <td>@team.MinAge - @team.MaxAge</td>
                                 <td>
-                                    <button class="btn btn-sm btn-success" id="teamToInvite_@team.Name">
+                                    <button class="btn btn-sm btn-success" id="teamToInvite_@team.Name" @onclick="() => AddTeam(team)">
                                         Invite
                                     </button>
                                 </td>
@@ -85,7 +90,38 @@
         <div class="col-md-4">
             <h4>Invited Teams</h4>
             <div class="card p-3">
-                <p class="text-muted">Selected teams will appear here.</p>
+                @* Display the list of invited teams *@
+                @if (GameState.Game.GameInvitations == null || !GameState.Game.GameInvitations.Any())
+                {
+                    <p class="text-muted">Selected teams will appear here.</p>
+                }
+                @* If there are invited teams, display them in a list indicating name and surname of the captain, number 
+                of members, MinAge, MaxAge and sport name *@
+                else
+                {
+                    <ul class="list-group list-group-flush" id="InvitedTeamsList">
+                        @foreach (var team in GameState.Game.GameInvitations)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-start">
+                                <div class="me-auto">
+                                    <div class="fw-bold">@team.Name (@team.Sport)</div>
+                                    <small class="text-muted d-block">
+                                        Captain: @team.CaptainName @team.CaptainSurname
+                                    </small>
+                                    <small class="text-muted d-block">
+                                        Members: @team.NumberOfMembers | Ages: @team.MinAge - @team.MaxAge
+                                    </small>
+                                </div>
+                                <button class="btn btn-sm btn-outline-danger" 
+                                        @onclick="() => RemoveTeam(team)" 
+                                        id="removeTeam_@team.Name"
+                                        title="Remove team">
+                                    &times;
+                                </button>
+                            </li>
+                        }
+                    </ul>
+                }
             </div>
         </div>
     </div>
@@ -100,7 +136,7 @@
     </div>
 </div>
 
-@* 3. Lógica C# *@
+@* 3. Logic C# *@
 @code {
     private string? captainName;
     private string? sport;
@@ -123,4 +159,20 @@
         }
         StateHasChanged();
     }
+
+    protected override async Task OnInitializedAsync()
+    {
+        SearchTeams();
+    }
+
+    private void AddTeam(TeamForGameDTO team)
+    {
+        GameState.AddTeamToGame(team);
+    }
+
+    private void RemoveTeam(TeamForGameDetailDTO team)
+    {
+        GameState.RemoveTeamFromGame(team);
+    }
+
 }
