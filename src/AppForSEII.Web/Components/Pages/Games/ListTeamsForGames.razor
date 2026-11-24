@@ -6,6 +6,7 @@
 @* Give access to the GameStateContainer class and injects the session instance in the variable GameState *@
 @using AppForSEII.Web
 @inject GameStateContainer GameState
+@inject NavigationManager Navigation
 
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize]
@@ -126,12 +127,21 @@
         </div>
     </div>
 
-    @* 4. Actions *@
+    @* 4. Actions -> (Basic Flow Step 3 & Alternative Flow 3 - Slide 31)*@
     <div class="row mt-3">
         <div class="col-12">
-            <button class="btn btn-primary" id="buttonCreateGame">
+            <button class="btn btn-primary" id="buttonCreateGame" 
+                    @onclick="CreateGame"
+                    disabled="@(GameState.NumberOfTeams < 2)">
                 Create Game
             </button>
+
+            @if (GameState.NumberOfTeams < 2)
+            {
+                <small class="text-muted d-block mt-1" id="minTeamsWarning">
+                    You must invite at least 2 teams to create a game.
+                </small>
+            }
         </div>
     </div>
 </div>
@@ -173,6 +183,11 @@
     private void RemoveTeam(TeamForGameDetailDTO team)
     {
         GameState.RemoveTeamFromGame(team);
+    }
+
+    private void CreateGame()
+    {
+        Navigation.NavigateTo("/games/creategame");
     }
 
 }
