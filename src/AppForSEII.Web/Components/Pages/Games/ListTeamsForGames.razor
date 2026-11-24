@@ -1,0 +1,193 @@
+@* 1. Directivas *@
+@page "/games/listteamsforgame"
+@using AppForSEII.Web.API
+@inject IAppForSEIIAPIClient apiservice
+
+@* Give access to the GameStateContainer class and injects the session instance in the variable GameState *@
+@using AppForSEII.Web
+@inject GameStateContainer GameState
+@inject NavigationManager Navigation
+
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+
+<div class="container mt-3">
+    @* 1. Header *@
+    <h3>Select Teams to Invite</h3>
+
+    @* 2. Filters *@
+    <div class="row my-3">
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="Filter by captain..." @bind="captainName" id="inputCaptain" />
+            
+            @* Sports Drop-down with Bootstrap form-select *@
+            <select class="form-select" @bind="sport" id="selectSport">
+                <option value="">All Sports</option>
+                <option value="Football">Football</option>
+                <option value="Padel">Padel</option>
+            </select>
+
+            <button class="btn btn-outline-primary" type="button" @onclick="SearchTeams" id="buttonSearch">Search</button>
+        </div>
+    </div>
+
+    @* 3. Main Content: Results (col-md-8) + Selected Teams (col-md-4) *@
+    <div class="row">
+        @* 3a. Results *@
+        <div class="col-md-8">
+            <h4>Available Teams</h4>
+
+            @if(teams == null)
+            {
+                <div class="alert alert-info" id="loadingMessage">
+                    Loading teams...
+                </div>
+            }
+            else if (!teams.Any())
+            {
+                    <div class="alert alert-warning" id="noTeamsMessage">
+                        No teams found matching your search criteria.
+                    </div>
+            }
+            else
+            {
+                <table class="table table-striped table-hover" id="TableOfTeams">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Captain</th>
+                        <th>Sport</th>
+                        <th>Members</th>
+                        <th>Ages</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (teams != null)
+                    {
+                        @foreach (var team in teams)
+                        {
+                            <tr>
+                                <td>@team.Name</td>
+                                <td>@team.CaptainName @team.CaptainSurname</td>
+                                <td>@team.Sport</td>
+                                <td>@team.NumberOfMembers</td>
+                                <td>@team.MinAge - @team.MaxAge</td>
+                                <td>
+                                    <button class="btn btn-sm btn-success" id="teamToInvite_@team.Name" @onclick="() => AddTeam(team)">
+                                        Invite
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+            }
+                        
+        </div>
+
+        @* 3b. Renting cart / Invited Teams *@
+        <div class="col-md-4">
+            <h4>Invited Teams</h4>
+            <div class="card p-3">
+                @* Display the list of invited teams *@
+                @if (GameState.Game.GameInvitations == null || !GameState.Game.GameInvitations.Any())
+                {
+                    <p class="text-muted">Selected teams will appear here.</p>
+                }
+                @* If there are invited teams, display them in a list indicating name and surname of the captain, number 
+                of members, MinAge, MaxAge and sport name *@
+                else
+                {
+                    <ul class="list-group list-group-flush" id="InvitedTeamsList">
+                        @foreach (var team in GameState.Game.GameInvitations)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-start">
+                                <div class="me-auto">
+                                    <div class="fw-bold">@team.Name (@team.Sport)</div>
+                                    <small class="text-muted d-block">
+                                        Captain: @team.CaptainName @team.CaptainSurname
+                                    </small>
+                                    <small class="text-muted d-block">
+                                        Members: @team.NumberOfMembers | Ages: @team.MinAge - @team.MaxAge
+                                    </small>
+                                </div>
+                                <button class="btn btn-sm btn-outline-danger" 
+                                        @onclick="() => RemoveTeam(team)" 
+                                        id="removeTeam_@team.Name"
+                                        title="Remove team">
+                                    &times;
+                                </button>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+        </div>
+    </div>
+
+    @* 4. Actions -> (Basic Flow Step 3 & Alternative Flow 3 - Slide 31)*@
+    <div class="row mt-3">
+        <div class="col-12">
+            <button class="btn btn-primary" id="buttonCreateGame" 
+                    @onclick="CreateGame"
+                    disabled="@(GameState.NumberOfTeams < 2)">
+                Create Game
+            </button>
+
+            @if (GameState.NumberOfTeams < 2)
+            {
+                <small class="text-muted d-block mt-1" id="minTeamsWarning">
+                    You must invite at least 2 teams to create a game.
+                </small>
+            }
+        </div>
+    </div>
+</div>
+
+@* 3. Logic C# *@
+@code {
+    private string? captainName;
+    private string? sport;
+    private ICollection<TeamForGameDTO>? teams { get; set; } = new List<TeamForGameDTO>();
+
+    protected async void SearchTeams()
+    {
+        try
+        {
+            // If field is empty or null, set it to null to avoid sending empty strings to the API
+            var searchCaptain = string.IsNullOrWhiteSpace(captainName) ? null : captainName;
+            var searchSport = string.IsNullOrWhiteSpace(sport) ? null : sport;
+
+            // Call the API to get the list of teams based on the filters
+            teams = await apiservice.GetTeamsForGameAsync(searchCaptain, searchSport);
+        }
+        catch (ApiException ex)
+        {
+            teams = new List<TeamForGameDTO>();
+        }
+        StateHasChanged();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        SearchTeams();
+    }
+
+    private void AddTeam(TeamForGameDTO team)
+    {
+        GameState.AddTeamToGame(team);
+    }
+
+    private void RemoveTeam(TeamForGameDetailDTO team)
+    {
+        GameState.RemoveTeamFromGame(team);
+    }
+
+    private void CreateGame()
+    {
+        Navigation.NavigateTo("/games/creategame");
+    }
+
+}

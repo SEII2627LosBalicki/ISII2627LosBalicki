@@ -6,6 +6,7 @@ using AppForSEII.Web.Components;
 using AppForSEII.Web.Components.Account;
 using AppForSEII.Web.Data;
 using AppForSEII.Web.API;
+using AppForSEII.Web;
 
 
 
@@ -78,6 +79,10 @@ string? URI2API = builder.Configuration.GetValue(typeof(string), "AppForSEIIAPIC
 //the environment variable URI2API is defined in appsettings.json
 builder.Services.AddScoped<IAppForSEIIAPIClient>(sp => new AppForSEIIAPIClient(URI2API, new HttpClient()));
 builder.Services.AddScoped<AppForSEIIAPIClient>(sp => new AppForSEIIAPIClient(URI2API, new HttpClient()));
+
+//adding an In-memory state container service
+//https://learn.microsoft.com/en-us/aspnet/core/blazor/state-management/?view=aspnetcore-8.0#in-memory-state-container-service
+builder.Services.AddScoped<GameStateContainer>();
 
 var app = builder.Build();
 
