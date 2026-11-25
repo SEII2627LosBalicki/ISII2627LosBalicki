@@ -1,0 +1,116 @@
+@page "/games/detailgame"
+
+
+@using AppForSEII.Web.API
+@using Microsoft.AspNetCore.Authorization
+@inject IAppForSEIIAPIClient apiclient
+
+@attribute [Authorize]
+
+<h3>DetailGame</h3>
+
+@if (game == null)
+{
+    <p id="error">@error</p>
+}
+else
+{
+        @* Table 1: Game Data *@
+        <table class="table table-borderless table-sm">
+        <tr>
+            <th>Name</th>
+            <td id="GameName">@game.Name</td>
+        </tr>
+        <tr>
+            <th>Sport</th>
+            <td id="GameSport">@game.Sport</td>
+        </tr>
+        <tr>
+            <th>Date</th>
+            <td id="GameDate">@game.Date.ToString("dd/MM/yyyy HH:mm")</td>
+        </tr>
+        <tr>
+            <th>Place</th>
+            <td id="GamePlace">@game.Place</td>
+        </tr>
+        <tr>
+            <th>Description</th>
+            <td id="GameDescription">@game.Description</td>
+        </tr>
+    </table>
+
+       <h4>Invited Teams</h4>
+
+    @* Table 2: Invited Teams *@
+    <table class="table" id="InvitedTeams">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Captain</th>
+                <th scope="col">Sport</th>
+                <th scope="col">Members</th>
+                <th scope="col">Ages</th>
+                <th scope="col">Invitation Message</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (TeamForGameDetailDTO item in game.Teams)
+            {
+                <tr id="TeamInvited@item.Name">
+                    <td>@item.Name</td>
+                    <td>@item.CaptainName @item.CaptainSurname</td>
+                    <td>@item.Sport </td>
+                    <td>@item.NumberOfMembers</td>
+                    <td>@item.MinAge - @item.MaxAge </td>
+                    <td>@item.Message</td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+              @*colspan is used to state that 5 columns are collapsed*@
+            <th scope="row" colspan="5" class="text-end">Total Invited Teams</th>
+            <td id="TotalTeams">@game.NumberOfTeams </td>
+        </tfoot>
+
+    </table>
+
+}
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public int GameID { get; set; }
+    private GameForDetailDTO game;
+    private string error = "";
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
+
+
+    protected override async Task OnInitializedAsync() {
+
+        //we check the user is logged in
+        string userName = "";
+        if (authenticationState is not null) 
+        {
+            var authState = await authenticationState;
+            var user = authState?.User;
+
+            //we retrieve the id of the user logged in
+            if (user is not null && user.Identity is not null && user.Identity.IsAuthenticated)
+            {
+                userName = user.Identity.Name ?? "";    
+            }
+        }
+
+        try {
+            game = await apiclient.GetGameAsync(GameID);
+        }
+        catch (ApiException exception) {
+            game = null;
+        }
+        if (game == null) {
+            error = $"Error! There is not a game with ID={GameID}.";
+        }
+    }
+}
